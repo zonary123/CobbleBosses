@@ -26,23 +26,25 @@ import net.minecraft.util.math.Vec3d;
 public class Boss {
   private String id;
   private String nickName;
+  private boolean glowing;
+  private Formatting color;
   private float chance;
   private int maxLevel;
   private int minLevel;
   private float maxSize;
   private float minSize;
-  private Formatting color;
   private AdvancedItemChance rewards;
 
   public Boss() {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
+    glowing = true;
+    color = Formatting.RED;
     chance = 0.1f;
     maxLevel = 120;
     minLevel = 100;
     maxSize = 2.0f;
     minSize = 1.5f;
-    color = Formatting.RED;
     rewards = new AdvancedItemChance();
   }
 
@@ -65,7 +67,10 @@ public class Boss {
     ServerWorld world = (ServerWorld) p.getEntityWorld();
     Vec3d pos = p.getPos();
     p.remove(Entity.RemovalReason.DISCARDED);
+    spawn(world, pos, pokemon);
+  }
 
+  public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
     PokemonProperties.Companion.parse("uncatchable=true").apply(pokemon);
 
     if (minSize == maxSize) {
@@ -87,9 +92,13 @@ public class Boss {
 
 
     PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
-      bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0));
+      if (glowing) {
+        bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0));
 
-      // Color Glowing
+        // Color Glowing
+
+      }
+
 
       var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
       bossEntity.setCustomNameVisible(true);
@@ -97,7 +106,5 @@ public class Boss {
       bossEntity.setCustomName(text);
       return Unit.INSTANCE;
     });
-
-
   }
 }

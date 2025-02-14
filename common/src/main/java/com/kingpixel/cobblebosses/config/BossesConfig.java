@@ -82,4 +82,12 @@ public class BossesConfig {
     }
     return null;
   }
+
+  public Boss getBoss(String id) {
+    if (id == null) return null;
+    for (Boss boss : bosses) {
+      if (boss.getId().equals(id)) return boss;
+    }
+    return null;
+  }
 }
