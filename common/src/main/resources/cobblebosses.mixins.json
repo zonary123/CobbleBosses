@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.kingpixel.cobblebosses.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PreventDamageMixin",
+    "PreventSaveMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
