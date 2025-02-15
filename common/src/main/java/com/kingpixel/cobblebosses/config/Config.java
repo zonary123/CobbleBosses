@@ -26,9 +26,9 @@ public class Config {
 
   public Config() {
     debug = false;
-    prefix = "§7[§6CobbleTags§7] ";
+    prefix = "§7[§6CobbleBosses§7] ";
     lang = "en";
-    commands = List.of("cobblebosses");
+    commands = List.of("cobblebosses", "bosses");
     rateSpawn = 2048;
   }
 
