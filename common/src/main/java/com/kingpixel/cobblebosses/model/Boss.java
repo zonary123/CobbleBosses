@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -27,7 +26,7 @@ public class Boss {
   private String id;
   private String nickName;
   private boolean glowing;
-  private Formatting color;
+  private String colorHex;
   private float chance;
   private int maxLevel;
   private int minLevel;
@@ -39,7 +38,7 @@ public class Boss {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
     glowing = true;
-    color = Formatting.RED;
+    colorHex = "#FF5733";
     chance = 0.1f;
     maxLevel = 120;
     minLevel = 100;
@@ -90,15 +89,12 @@ public class Boss {
     }
     Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
 
-
     PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
       if (glowing) {
-        bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0));
-
-        // Color Glowing
-
+        bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
       }
-
+      ParticleEffectManager particleEffectManager = new ParticleEffectManager(colorHex, minSize, maxSize);
+      particleEffectManager.spawnParticles(world, bossEntity);
 
       var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
       bossEntity.setCustomNameVisible(true);
