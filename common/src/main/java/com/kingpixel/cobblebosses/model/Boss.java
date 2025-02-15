@@ -25,6 +25,7 @@ import net.minecraft.util.math.Vec3d;
 public class Boss {
   private String id;
   private String nickName;
+  private String properties;
   private boolean glowing;
   private boolean particles;
   private String particleColor;
@@ -38,6 +39,7 @@ public class Boss {
   public Boss() {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
+    properties = "shiny=true";
     glowing = true;
     particleColor = "#FF5733";
     chance = 0.1f;
@@ -71,7 +73,7 @@ public class Boss {
   }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
-    PokemonProperties.Companion.parse("uncatchable=true").apply(pokemon);
+    PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
 
     if (minSize == maxSize) {
       pokemon.setScaleModifier(maxSize);

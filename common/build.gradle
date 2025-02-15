@@ -27,6 +27,7 @@ dependencies {
     // Kyori Adventure
     api("net.kyori:adventure-text-serializer-gson:${property("kyori_version")}")
     api("net.kyori:adventure-text-minimessage:${property("kyori_version")}")
+
     // Loom project
     modCompileOnly("net.kyori:adventure-platform-mod-shared-fabric-repack:6.0.0") // for Minecraft 1.21.2-1.21.4
 
@@ -36,21 +37,7 @@ dependencies {
     // ! Tests
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    // dependent on log4j for dynamic changing
-    implementation 'org.apache.logging.log4j:log4j-api:2.22.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.22.1'
-
-    // Unit test dependencies
-    testImplementation "org.junit.jupiter:junit-jupiter:5.10.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.10.0"
-    testImplementation "org.assertj:assertj-core:3.24.2"
-    testImplementation "org.mockito:mockito-core:5.4.0"
-    testImplementation "org.mockito:mockito-junit-jupiter:5.4.0"
-
-    // benchmark dependencies
-    testImplementation "org.openjdk.jmh:jmh-core:1.37"
-    testAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:1.37"
+    
 }
 
 test {
