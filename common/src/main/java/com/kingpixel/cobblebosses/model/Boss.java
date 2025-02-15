@@ -26,7 +26,8 @@ public class Boss {
   private String id;
   private String nickName;
   private boolean glowing;
-  private String colorHex;
+  private boolean particles;
+  private String particleColor;
   private float chance;
   private int maxLevel;
   private int minLevel;
@@ -38,7 +39,7 @@ public class Boss {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
     glowing = true;
-    colorHex = "#FF5733";
+    particleColor = "#FF5733";
     chance = 0.1f;
     maxLevel = 120;
     minLevel = 100;
@@ -93,8 +94,10 @@ public class Boss {
       if (glowing) {
         bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
       }
-      ParticleEffectManager particleEffectManager = new ParticleEffectManager(colorHex, minSize, maxSize);
-      particleEffectManager.spawnParticles(world, bossEntity);
+      if (particles) {
+        ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor, minSize, maxSize);
+        particleEffectManager.spawnParticles(world, bossEntity);
+      }
 
       var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
       bossEntity.setCustomNameVisible(true);

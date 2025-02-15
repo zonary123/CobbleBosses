@@ -9,12 +9,12 @@ import org.joml.Vector3f;
 
 public class ParticleEffectManager {
 
-    private final String colorHex;
+    private final String particleColor;
     private final float minSize;
     private final float maxSize;
 
     public ParticleEffectManager(String colorHex, float minSize, float maxSize) {
-        this.colorHex = colorHex;
+        this.particleColor = colorHex;
         this.minSize = minSize;
         this.maxSize = maxSize;
     }
@@ -36,7 +36,7 @@ public class ParticleEffectManager {
     }
 
     public void spawnParticles(ServerWorld world, LivingEntity bossEntity) {
-        Vector3f rgbColor = hexToRGB(colorHex);
+        Vector3f rgbColor = hexToRGB(particleColor);
 
         if (bossEntity instanceof PokemonEntity pokemonEntity) {
 
@@ -65,7 +65,7 @@ public class ParticleEffectManager {
                 spreadZ *= 1.5f;
             }
             if (height > 2.0f) {
-                spreadY *= 1.5f; // Makes sure larger Pokemon have a slightly bigger spread than others (Might need tweaking slightly)
+                spreadY *= 1.5f; // Makes sure larger Pokémon have a slightly bigger spread than others (Might need tweaking slightly)
             }
             float maxSpread = 2.5f;
             float maxHeightSpread = 3.0f;
@@ -86,7 +86,7 @@ public class ParticleEffectManager {
             if (bossEntity.isAlive()) {
                 double centerX = bossEntity.getX();
                 double centerY = bossEntity.getY() + height / 2.0;
-                double centerZ = bossEntity.getZ(); // Sets particles to be centered on the Pokemons hit box
+                double centerZ = bossEntity.getZ(); // Sets particles to be centered on the Pokémon hit box
 
                 world.spawnParticles(particleEffect,
                         centerX, centerY, centerZ,
