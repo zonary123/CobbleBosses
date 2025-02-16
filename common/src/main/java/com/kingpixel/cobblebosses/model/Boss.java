@@ -76,7 +76,7 @@ public class Boss {
     p.remove(Entity.RemovalReason.DISCARDED);
     spawn(world, pos, pokemon);
   }
-  private void assignBossToTeam(ServerWorld world, LivingEntity bossEntity, String glowingColor) {
+  private void assignBossToTeam(ServerWorld world, LivingEntity bossEntity) {
     if (bossEntity == null || world == null) {
       return;
     }
@@ -126,11 +126,11 @@ public class Boss {
     PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
       if (glowing) {
         bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
-        assignBossToTeam((ServerWorld) world, bossEntity, glowingColor);
+        assignBossToTeam(world, bossEntity);
       }
 
       if (particles) {
-        ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor, minSize, maxSize);
+        ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
         particleEffectManager.spawnParticles(world, bossEntity);
       }
 

@@ -6,20 +6,17 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.joml.Vector3f;
-
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParticleEffectManager {
     private final String particleColor;
     private ScheduledFuture<?> task;
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
-    public ParticleEffectManager(String colorHex, float minSize, float maxSize) {
+    public ParticleEffectManager(String colorHex) {
         this.particleColor = colorHex;
     }
 
