@@ -41,12 +41,15 @@ public abstract class PreventDamageMixin {
         return;
       }
       if (attacker instanceof ServerPlayerEntity player) {
-        if (!PermissionApi.hasPermission(player, CobbleBosses.MOD_ID + ".showrewards", 2)) return;
         Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
         if (boss == null) {
           if (CobbleBosses.config.isDebug()) {
             CobbleUtils.LOGGER.info("Boss not found for pokemon: " + pokemon);
           }
+          return;
+        }
+        if (!PermissionApi.hasPermission(player, CobbleBosses.MOD_ID + ".showrewards", 2)) {
+          cir.cancel();
           return;
         }
         AdvancedItemChance rewards = boss.getRewards();

@@ -41,6 +41,7 @@ public class Boss {
     nickName = "§e%pokemon% §9Boss";
     properties = "shiny=true";
     glowing = true;
+    particles = true;
     particleColor = "#FF5733";
     chance = 0.1f;
     maxLevel = 120;
@@ -62,6 +63,8 @@ public class Boss {
       minSize = maxSize;
       maxSize = temp;
     }
+    if (properties == null) properties = "shiny=true";
+    if (particleColor == null) particleColor = "#FF5733";
   }
 
   public void convert(PokemonEntity p) {
