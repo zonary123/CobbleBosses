@@ -35,13 +35,6 @@ public class BattleEvents {
         }
         for (BattleActor loserActor : evt.getLosers()) {
           if (loserActor instanceof PokemonBattleActor pokemonBattleActor) {
-         /* pokemonEntity = pokemonBattleActor.getEntity();
-          if (pokemonEntity == null) {
-            if (CobbleBosses.config.isDebug()) {
-              CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Pokemon not found");
-            }
-            return Unit.INSTANCE;
-          }*/
             Pokemon pokemon = pokemonBattleActor.getPokemon().getOriginalPokemon();
             if (pokemon == null) {
               if (CobbleBosses.config.isDebug()) {

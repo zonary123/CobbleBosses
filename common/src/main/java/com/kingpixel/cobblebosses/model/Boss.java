@@ -67,6 +67,9 @@ public class Boss {
       minSize = maxSize;
       maxSize = temp;
     }
+
+    if (particleColor == null) particleColor = "#FF5733";
+    if (glowingColor == null) glowingColor = Formatting.DARK_PURPLE;
   }
 
   public void convert(PokemonEntity p) {
@@ -121,7 +124,7 @@ public class Boss {
         assignBossToTeam(world, bossEntity);
       }
 
-      if (particles) {
+      if (particles && !particleColor.isEmpty()) {
         ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
         particleEffectManager.spawnParticles(world, bossEntity);
       }
