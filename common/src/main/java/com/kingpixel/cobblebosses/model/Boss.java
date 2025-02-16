@@ -30,7 +30,7 @@ public class Boss {
   private String id;
   private String nickName;
   private boolean glowing;
-  private String glowingColor;
+  private Formatting glowingColor;
   private boolean particles;
   private String particleColor;
   private float chance;
@@ -44,7 +44,7 @@ public class Boss {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
     glowing = true;
-    glowingColor = "DARK_RED";
+    glowingColor = Formatting.DARK_PURPLE;
     particles = true;
     particleColor = "#FF5733";
     chance = 0.1f;
@@ -76,31 +76,23 @@ public class Boss {
     p.remove(Entity.RemovalReason.DISCARDED);
     spawn(world, pos, pokemon);
   }
+
   private void assignBossToTeam(ServerWorld world, LivingEntity bossEntity) {
     if (bossEntity == null || world == null) {
       return;
     }
     Scoreboard scoreboard = world.getScoreboard();
-    String teamColorName = "boss_" + this.glowingColor.toLowerCase();
+    String teamColorName = "boss_" + this.glowingColor.getName();
     Team team = scoreboard.getTeam(teamColorName);
 
     if (team == null) {
       team = scoreboard.addTeam(teamColorName);
-      team.setDisplayName(Text.literal("boss_" + this.glowingColor.toLowerCase()));
+      team.setDisplayName(Text.literal("boss_" + this.glowingColor.getName()));
       team.setFriendlyFireAllowed(false);
     }
-    Formatting teamColor = stringToFormatting(this.glowingColor);
-    team.setColor(teamColor);
+    team.setColor(this.glowingColor);
     scoreboard.addScoreHolderToTeam(bossEntity.getNameForScoreboard(), team);
 
-  }
-
-  private Formatting stringToFormatting(String color) {
-    try {
-      return Formatting.valueOf(color.toUpperCase());
-    } catch (IllegalArgumentException e) {
-      return Formatting.WHITE;
-    }
   }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
