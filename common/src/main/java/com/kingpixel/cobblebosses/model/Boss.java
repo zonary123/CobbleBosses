@@ -10,12 +10,16 @@ import com.kingpixel.cobbleutils.util.Utils;
 import kotlin.Unit;
 import lombok.Data;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -25,8 +29,8 @@ import net.minecraft.util.math.Vec3d;
 public class Boss {
   private String id;
   private String nickName;
-  private String properties;
   private boolean glowing;
+  private String glowingColor;
   private boolean particles;
   private String particleColor;
   private float chance;
@@ -39,8 +43,9 @@ public class Boss {
   public Boss() {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
-    properties = "shiny=true";
     glowing = true;
+    glowingColor = "DARK_RED";
+    particles = true;
     particleColor = "#FF5733";
     chance = 0.1f;
     maxLevel = 120;
@@ -71,9 +76,35 @@ public class Boss {
     p.remove(Entity.RemovalReason.DISCARDED);
     spawn(world, pos, pokemon);
   }
+  private void assignBossToTeam(ServerWorld world, LivingEntity bossEntity, String glowingColor) {
+    if (bossEntity == null || world == null) {
+      return;
+    }
+    Scoreboard scoreboard = world.getScoreboard();
+    String teamColorName = "boss_" + this.glowingColor.toLowerCase();
+    Team team = scoreboard.getTeam(teamColorName);
+
+    if (team == null) {
+      team = scoreboard.addTeam(teamColorName);
+      team.setDisplayName(Text.literal("boss_" + this.glowingColor.toLowerCase()));
+      team.setFriendlyFireAllowed(false);
+    }
+    Formatting teamColor = stringToFormatting(this.glowingColor);
+    team.setColor(teamColor);
+    scoreboard.addScoreHolderToTeam(bossEntity.getNameForScoreboard(), team);
+
+  }
+
+  private Formatting stringToFormatting(String color) {
+    try {
+      return Formatting.valueOf(color.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      return Formatting.WHITE;
+    }
+  }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
-    PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
+    PokemonProperties.Companion.parse("uncatchable=true").apply(pokemon);
 
     if (minSize == maxSize) {
       pokemon.setScaleModifier(maxSize);
@@ -95,7 +126,9 @@ public class Boss {
     PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
       if (glowing) {
         bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
+        assignBossToTeam((ServerWorld) world, bossEntity, glowingColor);
       }
+
       if (particles) {
         ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor, minSize, maxSize);
         particleEffectManager.spawnParticles(world, bossEntity);
@@ -105,6 +138,7 @@ public class Boss {
       bossEntity.setCustomNameVisible(true);
       bossEntity.getPokemon().setNickname(text);
       bossEntity.setCustomName(text);
+
       return Unit.INSTANCE;
     });
   }
