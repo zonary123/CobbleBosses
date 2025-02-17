@@ -44,9 +44,9 @@ public class Boss {
     id = "default";
     nickName = "§e%pokemon% §9Boss";
     glowing = true;
-    glowingColor = Formatting.DARK_PURPLE;
+    glowingColor = Formatting.LIGHT_PURPLE;
     particles = true;
-    particleColor = "#FF5733";
+    particleColor = "#CBC3E3";
     chance = 0.1f;
     maxLevel = 120;
     minLevel = 100;
@@ -68,8 +68,8 @@ public class Boss {
       maxSize = temp;
     }
 
-    if (particleColor == null) particleColor = "#FF5733";
-    if (glowingColor == null) glowingColor = Formatting.DARK_PURPLE;
+    if (particleColor == null) particleColor = "#CBC3E3";
+    if (glowingColor == null) glowingColor = Formatting.LIGHT_PURPLE;
   }
 
   public void convert(PokemonEntity p) {
