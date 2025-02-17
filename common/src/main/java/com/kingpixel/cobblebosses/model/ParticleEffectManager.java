@@ -58,8 +58,8 @@ public class ParticleEffectManager {
 
     Pokemon pokemon = pokemonEntity.getPokemon();
     float scale = pokemon.getScaleModifier();
-    float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
-    float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
+    float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
+    float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
     float spreadY = height * 0.5f;
 
     return new float[]{spreadX, spreadY, spreadZ};
