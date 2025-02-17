@@ -4,7 +4,6 @@ import ca.landonjw.gooeylibs2.api.tasks.Task;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import org.joml.Vector3f;
 
@@ -37,26 +36,28 @@ public class ParticleEffectManager {
       return;
     }
 
-    float width = pokemonEntity.getPokemon().getSpecies().getHitbox().width();
-    float height = pokemonEntity.getPokemon().getSpecies().getHitbox().height();
+    var hitbox = pokemonEntity.getPokemon().getForm().getHitbox();
+
+    float width = hitbox.width();
+    float height = hitbox.height();
 
 
     int particleCount = 5;
 
-    float[] spreads = calculateParticleSpread(width, height);
+    float[] spreads = calculateParticleSpread(pokemonEntity, width, height);
     float spreadX = spreads[0], spreadY = spreads[1], spreadZ = spreads[2];
 
     float particleSize = 1;
 
     DustParticleEffect particleEffect = new DustParticleEffect(rgbColor, particleSize);
-    scheduleParticleTask(world.getServer(), world, bossEntity, particleEffect, spreadX, spreadY, spreadZ, particleCount, height);
+    scheduleParticleTask(world, bossEntity, particleEffect, spreadX, spreadY, spreadZ, particleCount, height);
   }
 
-  private float[] calculateParticleSpread(float width, float height) {
-    float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f));
-    float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f));
-    float spreadY = Math.min(height * 0.8f, height + 1.0f);
-    spreadY = Math.max(spreadY, height * 0.6f);
+  private float[] calculateParticleSpread(PokemonEntity pokemonEntity, float width, float height) {
+    float scale = pokemonEntity.getScale();
+    float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
+    float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
+    float spreadY = (height) * scale;
 
     return new float[]{spreadX, spreadY, spreadZ};
   }
@@ -71,7 +72,7 @@ public class ParticleEffectManager {
     return Math.max(1, intervalTicks); // Ensure at least 1 tick
   }
 
-  private void scheduleParticleTask(MinecraftServer server, ServerWorld world, LivingEntity bossEntity,
+  private void scheduleParticleTask(ServerWorld world, LivingEntity bossEntity,
                                     DustParticleEffect particleEffect, float spreadX, float spreadY, float spreadZ,
                                     int particleCount, float height) {
 
@@ -79,7 +80,7 @@ public class ParticleEffectManager {
 
     Task.builder()
       .execute((task) -> {
-        if (!bossEntity.isAlive()) {
+        if (bossEntity == null || !bossEntity.isAlive()) {
           task.setExpired();
           return;
         }
