@@ -2,6 +2,7 @@ package com.kingpixel.cobblebosses.model;
 
 import ca.landonjw.gooeylibs2.api.tasks.Task;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
@@ -47,17 +48,19 @@ public class ParticleEffectManager {
     float[] spreads = calculateParticleSpread(pokemonEntity, width, height);
     float spreadX = spreads[0], spreadY = spreads[1], spreadZ = spreads[2];
 
-    float particleSize = 1;
+    float particleSize = 1 + (width + height) / 2.0f;
 
     DustParticleEffect particleEffect = new DustParticleEffect(rgbColor, particleSize);
     scheduleParticleTask(world, bossEntity, particleEffect, spreadX, spreadY, spreadZ, particleCount, height);
   }
 
   private float[] calculateParticleSpread(PokemonEntity pokemonEntity, float width, float height) {
-    float scale = pokemonEntity.getScale();
+
+    Pokemon pokemon = pokemonEntity.getPokemon();
+    float scale = pokemon.getScaleModifier();
     float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
     float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale;
-    float spreadY = (height) * scale;
+    float spreadY = height * 0.5f;
 
     return new float[]{spreadX, spreadY, spreadZ};
   }
