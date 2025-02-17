@@ -3,6 +3,7 @@ package com.kingpixel.cobblebosses.command;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.command.argument.PokemonPropertiesArgumentType;
 import com.kingpixel.cobblebosses.CobbleBosses;
+import com.kingpixel.cobblebosses.config.OldConfig;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobbleutils.api.PermissionApi;
 import com.mojang.brigadier.CommandDispatcher;
@@ -35,6 +36,13 @@ public class CommandTree {
             CommandManager.literal("reload")
               .executes(context -> {
                   CobbleBosses.load();
+                  return 1;
+                }
+              )
+          ).then(
+            CommandManager.literal("migrate")
+              .executes(context -> {
+                  OldConfig.migrate();
                   return 1;
                 }
               )

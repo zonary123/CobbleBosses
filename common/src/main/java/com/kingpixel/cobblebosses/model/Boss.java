@@ -38,6 +38,7 @@ public class Boss {
   private int minLevel;
   private float maxSize;
   private float minSize;
+  private String properties;
   private AdvancedItemChance rewards;
 
   public Boss() {
@@ -52,6 +53,7 @@ public class Boss {
     minLevel = 100;
     maxSize = 2.0f;
     minSize = 1.5f;
+    properties = "shiny=true";
     rewards = new AdvancedItemChance();
   }
 
@@ -70,6 +72,9 @@ public class Boss {
 
     if (particleColor == null) particleColor = "#CBC3E3";
     if (glowingColor == null) glowingColor = Formatting.LIGHT_PURPLE;
+    if (nickName == null) nickName = "§e%pokemon% §9Boss";
+    if (properties == null) properties = "shiny=true";
+    if (rewards == null) rewards = new AdvancedItemChance();
   }
 
   public void convert(PokemonEntity p) {
@@ -99,7 +104,7 @@ public class Boss {
   }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
-    PokemonProperties.Companion.parse("uncatchable=true").apply(pokemon);
+    PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
 
     if (minSize == maxSize) {
       pokemon.setScaleModifier(maxSize);
