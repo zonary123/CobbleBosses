@@ -48,25 +48,31 @@ public class ParticleEffectManager {
     float[] spreads = calculateParticleSpread(pokemonEntity, width, height);
     float spreadX = spreads[0], spreadY = spreads[1], spreadZ = spreads[2];
 
-    float particleSize = 1 + (width + height) / 2.0f;
+    float particleSize = calculateParticleSize(pokemonEntity, width, height);
 
     DustParticleEffect particleEffect = new DustParticleEffect(rgbColor, particleSize);
     scheduleParticleTask(world, bossEntity, particleEffect, spreadX, spreadY, spreadZ, particleCount, height);
   }
 
-  private float[] calculateParticleSpread(PokemonEntity pokemonEntity, float width, float height) {
+  private float calculateParticleSize(PokemonEntity pokemonEntity, float width, float height) {
+    float baseSize = 0.5f;
+    float scaleFactor = pokemonEntity.getPokemon().getScaleModifier();
+    float dynamicSize = baseSize + ((float) Math.sqrt(width * height) * 0.3f) + (scaleFactor * 0.5f);
 
+    return Math.max(0.2f, Math.min(dynamicSize, 4.0f));
+  }
+
+  private float[] calculateParticleSpread(PokemonEntity pokemonEntity, float width, float height) {
     Pokemon pokemon = pokemonEntity.getPokemon();
     float scale = pokemon.getScaleModifier();
     float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
     float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
     float spreadY = height * 0.5f;
-
     return new float[]{spreadX, spreadY, spreadZ};
   }
 
   private long calculateDynamicIntervalInTicks(float width, float height) {
-    long minInterval = 50;
+    long minInterval = 25;
     long maxInterval = 400;
     float sizeFactor = (width + height) / 2.0f;
     float scaleFactor = Math.max(0.1f, Math.min(sizeFactor / 3.0f, 1.0f));
