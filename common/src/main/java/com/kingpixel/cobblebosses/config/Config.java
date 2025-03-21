@@ -23,6 +23,7 @@ public class Config {
   private String lang;
   private List<String> commands;
   private int rateSpawn;
+  private List<String> blackListWorlds;
 
   public Config() {
     debug = false;
@@ -30,6 +31,7 @@ public class Config {
     lang = "en";
     commands = List.of("cobblebosses", "bosses");
     rateSpawn = 2048;
+    blackListWorlds = List.of("minecraft:world_nether", "minecraft:world_the_end");
   }
 
   public void init() {
@@ -50,7 +52,8 @@ public class Config {
       CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "No config.json file found for" + CobbleBosses.MOD_NAME + ". Attempting" +
         " to generate one.");
       Gson gson = Utils.newGson();
-      String data = gson.toJson(this);
+      CobbleBosses.config = this;
+      String data = gson.toJson(CobbleBosses.config);
       CompletableFuture<Boolean> futureWrite = Utils.writeFileAsync(CobbleBosses.PATH, "config.json",
         data);
 

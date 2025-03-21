@@ -5,7 +5,10 @@ import com.cobblemon.mod.common.command.argument.PokemonPropertiesArgumentType;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.config.OldConfig;
 import com.kingpixel.cobblebosses.model.Boss;
+import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.api.PermissionApi;
+import com.kingpixel.cobbleutils.util.PlayerUtils;
+import com.kingpixel.cobbleutils.util.TypeMessage;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -36,6 +39,18 @@ public class CommandTree {
             CommandManager.literal("reload")
               .executes(context -> {
                   CobbleBosses.load();
+                  ServerPlayerEntity player = context.getSource().getPlayer();
+                  if (player != null) {
+                    PlayerUtils.sendMessage(
+                      player,
+                      CobbleBosses.language.getReload(),
+                      CobbleBosses.config.getPrefix(),
+                      TypeMessage.CHAT
+                    );
+                  } else {
+                    CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, CobbleBosses.language.getReload()
+                      .replace("%prefix%", CobbleBosses.config.getPrefix()));
+                  }
                   return 1;
                 }
               )

@@ -12,12 +12,13 @@ import java.util.concurrent.CompletableFuture;
 @Getter
 @Setter
 public class Lang {
+  private String reload;
 
   /**
    * Constructor to generate a file if one doesn't exist.
    */
   public Lang() {
-
+    this.reload = "%prefix% &7Reloaded &7.";
   }
 
   /**
@@ -41,7 +42,8 @@ public class Lang {
       CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "No lang.json file found for" + CobbleBosses.MOD_NAME + ". Attempting " +
         "to generate one.");
       Gson gson = Utils.newGson();
-      String data = gson.toJson(this);
+      CobbleBosses.language = this;
+      String data = gson.toJson(CobbleBosses.language);
       CompletableFuture<Boolean> futureWrite = Utils.writeFileAsync(CobbleBosses.PATH_LANG, CobbleBosses.config.getLang() +
           ".json",
         data);
