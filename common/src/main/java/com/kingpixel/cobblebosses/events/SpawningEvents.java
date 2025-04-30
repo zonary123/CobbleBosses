@@ -5,6 +5,7 @@ import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.config.BossesConfig;
+import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.util.PokemonUtils;
 import com.kingpixel.cobbleutils.util.Utils;
 import kotlin.Unit;
@@ -23,6 +24,9 @@ public class SpawningEvents {
       if (isSpecial(pokemon)) return Unit.INSTANCE;
       ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
       String s = world.getRegistryKey().getValue().toString();
+      if (CobbleBosses.config.isDebug()) {
+        CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "World: " + s);
+      }
       if (CobbleBosses.config.getBlackListWorlds().contains(s)) return Unit.INSTANCE;
       int random = Utils.RANDOM.nextInt(CobbleBosses.config.getRateSpawn());
       if (random == 0) {
