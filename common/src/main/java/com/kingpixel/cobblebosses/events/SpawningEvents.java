@@ -21,28 +21,26 @@ public class SpawningEvents {
 
   public static void register() {
     CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.HIGHEST, evt -> {
-      CompletableFuture.runAsync(() -> {
-          var pokemonEntity = evt.getEntity();
-          var pokemon = pokemonEntity.getPokemon();
-          if (isSpecial(pokemon)) return;
-          ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
-          String s = world.getRegistryKey().getValue().toString();
-          if (CobbleBosses.config.isDebug()) {
-            CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "World: " + s);
-          }
-          if (CobbleBosses.config.getBlackListWorlds().contains(s)) return;
-          int random = Utils.RANDOM.nextInt(CobbleBosses.config.getRateSpawn());
-          if (random == 0) {
+      var pokemonEntity = evt.getEntity();
+      var pokemon = pokemonEntity.getPokemon();
+      if (isSpecial(pokemon)) return Unit.INSTANCE;
+      ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
+      String s = world.getRegistryKey().getValue().toString();
+      if (CobbleBosses.config.isDebug()) CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "World: " + s);
+      if (CobbleBosses.config.getBlackListWorlds().contains(s)) return Unit.INSTANCE;
+      int random = Utils.RANDOM.nextInt(CobbleBosses.config.getRateSpawn());
+      if (random == 0) {
+        CompletableFuture.runAsync(() -> {
             var boss = BossesConfig.getRandomBoss();
             if (boss == null) return;
             boss.convert(pokemonEntity);
-            CobbleBosses.server.executeSync(evt::cancel);
-          }
-        })
-        .exceptionally(e -> {
-          e.printStackTrace();
-          return null;
-        });
+          })
+          .exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+          });
+        evt.cancel();
+      }
       return Unit.INSTANCE;
     });
   }
