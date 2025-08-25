@@ -81,7 +81,7 @@ public class Boss {
     Pokemon pokemon = p.getPokemon().clone(true, DynamicRegistryManager.EMPTY);
     ServerWorld world = (ServerWorld) p.getEntityWorld();
     Vec3d pos = p.getPos();
-    p.remove(Entity.RemovalReason.DISCARDED);
+    CobbleBosses.server.executeSync(() -> p.remove(Entity.RemovalReason.DISCARDED));
     spawn(world, pos, pokemon);
   }
 
@@ -115,31 +115,33 @@ public class Boss {
     NbtCompound nbt = pokemon.getPersistentData();
     nbt.putString(CobbleBosses.TAG_BOSS_ID, id);
 
-    Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.maxLevelCap);
-    if (minLevel == maxLevel) {
-      pokemon.setLevel(maxLevel);
-    } else {
-      pokemon.setLevel(Utils.RANDOM.nextInt(minLevel, maxLevel));
-    }
-    Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
-
-    PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
-      if (glowing) {
-        bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
-        assignBossToTeam(world, bossEntity);
+    CobbleBosses.server.executeSync(() -> {
+      Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.maxLevelCap);
+      if (minLevel == maxLevel) {
+        pokemon.setLevel(maxLevel);
+      } else {
+        pokemon.setLevel(Utils.RANDOM.nextInt(minLevel, maxLevel));
       }
+      Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
 
-      if (particles && !particleColor.isEmpty()) {
-        ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
-        particleEffectManager.spawnParticles(world, bossEntity);
-      }
+      PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
+        if (glowing) {
+          bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
+          assignBossToTeam(world, bossEntity);
+        }
 
-      var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
-      bossEntity.setCustomNameVisible(true);
-      bossEntity.getPokemon().setNickname(text);
-      bossEntity.setCustomName(text);
+        if (particles && !particleColor.isEmpty()) {
+          ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
+          particleEffectManager.spawnParticles(world, bossEntity);
+        }
 
-      return Unit.INSTANCE;
+        var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
+        bossEntity.setCustomNameVisible(true);
+        bossEntity.getPokemon().setNickname(text);
+        bossEntity.setCustomName(text);
+
+        return Unit.INSTANCE;
+      });
     });
   }
 }
