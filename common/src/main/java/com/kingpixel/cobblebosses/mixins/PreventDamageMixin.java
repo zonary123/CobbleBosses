@@ -31,6 +31,7 @@ public abstract class PreventDamageMixin {
     if (pokemon.getPersistentData().contains(CobbleBosses.TAG_BOSS_ID)) {
       cir.cancel();
       cir.setReturnValue(false);
+
       Entity attacker = source.getAttacker();
       if (attacker == null) return;
       if (attacker instanceof ServerPlayerEntity player) {

@@ -13,7 +13,7 @@ dependencies {
     modImplementation("net.neoforged:neoforge:${rootProject.neoforge_version}")
     modImplementation("dev.architectury:architectury:${property("architectury_version")}")
     modImplementation("ca.landonjw.gooeylibs:fabric-api-repack:${property("gooeylibs_version")}")
-    modImplementation(files("libs/CobbleUtils-1.21.1-common-1.1.3.jar"))
+    modImplementation(files("libs/CobbleUtils-1.6.1-1.21.1-fabric-1.1.4-b572f7e.jar"))
 
 
     // PlaceholderAPI
@@ -37,7 +37,7 @@ dependencies {
     // ! Tests
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-    
+
 }
 
 test {

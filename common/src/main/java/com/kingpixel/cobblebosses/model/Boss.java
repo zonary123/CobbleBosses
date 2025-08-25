@@ -34,10 +34,10 @@ public class Boss {
   private boolean particles;
   private String particleColor;
   private float chance;
-  private int maxLevel;
   private int minLevel;
-  private float maxSize;
+  private int maxLevel;
   private float minSize;
+  private float maxSize;
   private String properties;
   private AdvancedItemChance rewards;
 
@@ -81,7 +81,7 @@ public class Boss {
     Pokemon pokemon = p.getPokemon().clone(true, DynamicRegistryManager.EMPTY);
     ServerWorld world = (ServerWorld) p.getEntityWorld();
     Vec3d pos = p.getPos();
-    p.remove(Entity.RemovalReason.DISCARDED);
+    CobbleBosses.server.executeSync(() -> p.remove(Entity.RemovalReason.DISCARDED));
     spawn(world, pos, pokemon);
   }
 
@@ -100,46 +100,42 @@ public class Boss {
     }
     team.setColor(this.glowingColor);
     scoreboard.addScoreHolderToTeam(bossEntity.getNameForScoreboard(), team);
-
   }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
     PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
 
-    if (minSize == maxSize) {
-      pokemon.setScaleModifier(maxSize);
-    } else {
-      pokemon.setScaleModifier(Utils.RANDOM.nextFloat(minSize, maxSize));
-    }
+    if (minSize == maxSize) pokemon.setScaleModifier(maxSize);
+    else pokemon.setScaleModifier(Utils.RANDOM.nextFloat(minSize, maxSize));
 
     NbtCompound nbt = pokemon.getPersistentData();
     nbt.putString(CobbleBosses.TAG_BOSS_ID, id);
 
-    Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.maxLevelCap);
-    if (minLevel == maxLevel) {
-      pokemon.setLevel(maxLevel);
-    } else {
-      pokemon.setLevel(Utils.RANDOM.nextInt(minLevel, maxLevel));
-    }
-    Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
+    CobbleBosses.server.executeSync(() -> {
+      Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.maxLevelCap);
+      if (minLevel == maxLevel) pokemon.setLevel(maxLevel);
+      else pokemon.setLevel(Utils.RANDOM.nextInt(minLevel, maxLevel));
 
-    PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
-      if (glowing) {
-        bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
-        assignBossToTeam(world, bossEntity);
-      }
+      Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
 
-      if (particles && !particleColor.isEmpty()) {
-        ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
-        particleEffectManager.spawnParticles(world, bossEntity);
-      }
+      PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
+        if (glowing) {
+          bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
+          assignBossToTeam(world, bossEntity);
+        }
 
-      var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
-      bossEntity.setCustomNameVisible(true);
-      bossEntity.getPokemon().setNickname(text);
-      bossEntity.setCustomName(text);
+        if (particles && !particleColor.isEmpty()) {
+          ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);
+          particleEffectManager.spawnParticles(world, bossEntity);
+        }
 
-      return Unit.INSTANCE;
+        var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
+        bossEntity.setCustomNameVisible(true);
+        bossEntity.getPokemon().setNickname(text);
+        bossEntity.setCustomName(text);
+
+        return Unit.INSTANCE;
+      });
     });
   }
 }
