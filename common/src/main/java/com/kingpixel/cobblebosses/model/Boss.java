@@ -22,6 +22,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.List;
+
 /**
  * @author Carlos Varas Alonso - 14/02/2025 4:15
  */
@@ -38,6 +40,7 @@ public class Boss {
   private int minLevel;
   private float maxSize;
   private float minSize;
+  private List<String> pokemons;
   private String properties;
   private AdvancedItemChance rewards;
 
@@ -53,6 +56,7 @@ public class Boss {
     minLevel = 100;
     maxSize = 2.0f;
     minSize = 1.5f;
+    pokemons = List.of("pikachu");
     properties = "shiny=true";
     rewards = new AdvancedItemChance();
   }
@@ -104,27 +108,33 @@ public class Boss {
   }
 
   public void spawn(ServerWorld world, Vec3d pos, Pokemon pokemon) {
-    PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
+    if (pokemons.isEmpty()) {
+      PokemonProperties.Companion.parse("uncatchable=true " + getProperties()).apply(pokemon);
+    } else {
+      String pokemonId = pokemons.get(Utils.getRandom().nextInt(pokemons.size()));
+      pokemon = PokemonProperties.Companion.parse(pokemonId + " uncatchable=true " + getProperties()).create();
+    }
 
     if (minSize == maxSize) {
       pokemon.setScaleModifier(maxSize);
     } else {
-      pokemon.setScaleModifier(Utils.RANDOM.nextFloat(minSize, maxSize));
+      pokemon.setScaleModifier(Utils.getRandom().nextFloat(minSize, maxSize));
     }
 
-    NbtCompound nbt = pokemon.getPersistentData();
-    nbt.putString(CobbleBosses.TAG_BOSS_ID, id);
-
+    Pokemon finalPokemon = pokemon;
     CobbleBosses.server.executeSync(() -> {
+      NbtCompound nbt = finalPokemon.getPersistentData();
+      nbt.putString(CobbleBosses.TAG_BOSS_ID, id);
+
       Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.maxLevelCap);
       if (minLevel == maxLevel) {
-        pokemon.setLevel(maxLevel);
+        finalPokemon.setLevel(maxLevel);
       } else {
-        pokemon.setLevel(Utils.RANDOM.nextInt(minLevel, maxLevel));
+        finalPokemon.setLevel(Utils.getRandom().nextInt(minLevel, maxLevel));
       }
       Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
 
-      PokemonEntity pokemonEntity = pokemon.sendOut(world, pos, null, bossEntity -> {
+      PokemonEntity pokemonEntity = finalPokemon.sendOut(world, pos, null, bossEntity -> {
         if (glowing) {
           bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
           assignBossToTeam(world, bossEntity);
@@ -135,7 +145,7 @@ public class Boss {
           particleEffectManager.spawnParticles(world, bossEntity);
         }
 
-        var text = Text.empty().append(nickName.replace("%pokemon%", pokemon.getDisplayName().getString()));
+        var text = Text.empty().append(nickName.replace("%pokemon%", finalPokemon.getDisplayName().getString()));
         bossEntity.setCustomNameVisible(true);
         bossEntity.getPokemon().setNickname(text);
         bossEntity.setCustomName(text);

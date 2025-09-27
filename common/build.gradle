@@ -13,8 +13,7 @@ dependencies {
     modImplementation("net.neoforged:neoforge:${rootProject.neoforge_version}")
     modImplementation("dev.architectury:architectury:${property("architectury_version")}")
     modImplementation("ca.landonjw.gooeylibs:fabric-api-repack:${property("gooeylibs_version")}")
-    modImplementation(files("libs/CobbleUtils-1.6.1-1.21.1-fabric-1.1.4-b572f7e.jar"))
-
+    modImplementation(fileTree("libs")) // Local libs
 
     // PlaceholderAPI
     modImplementation("eu.pb4:placeholder-api:${property("placeholder_api_version_fabricandforge")}")
