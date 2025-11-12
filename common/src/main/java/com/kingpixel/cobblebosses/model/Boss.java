@@ -145,7 +145,7 @@ public class Boss {
           particleEffectManager.spawnParticles(world, bossEntity);
         }
 
-        var text = Text.empty().append(nickName.replace("%pokemon%", finalPokemon.getDisplayName().getString()));
+        var text = Text.empty().append(nickName.replace("%pokemon%", finalPokemon.getDisplayName(false).getString()));
         bossEntity.setCustomNameVisible(true);
         bossEntity.getPokemon().setNickname(text);
         bossEntity.setCustomName(text);
