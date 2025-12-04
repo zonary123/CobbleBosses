@@ -8,11 +8,8 @@ import com.kingpixel.cobblebosses.config.BossesConfig;
 import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.util.PokemonUtils;
 import com.kingpixel.cobbleutils.util.Utils;
-import kotlin.Unit;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Carlos Varas Alonso - 14/02/2025 4:18
@@ -23,25 +20,18 @@ public class SpawningEvents {
     CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.HIGHEST, evt -> {
       var pokemonEntity = evt.getEntity();
       var pokemon = pokemonEntity.getPokemon();
-      if (isSpecial(pokemon)) return Unit.INSTANCE;
+      if (isSpecial(pokemon)) return;
       ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
       String s = world.getRegistryKey().getValue().toString();
       if (CobbleBosses.config.isDebug()) CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "World: " + s);
-      if (CobbleBosses.config.getBlackListWorlds().contains(s)) return Unit.INSTANCE;
-      int random = Utils.RANDOM.nextInt(CobbleBosses.config.getRateSpawn());
+      if (CobbleBosses.config.getBlackListWorlds().contains(s)) return;
+      int random = Utils.getRandom().nextInt(CobbleBosses.config.getRateSpawn());
       if (random == 0) {
-        CompletableFuture.runAsync(() -> {
-            var boss = BossesConfig.getRandomBoss();
-            if (boss == null) return;
-            boss.convert(pokemonEntity);
-          })
-          .exceptionally(e -> {
-            e.printStackTrace();
-            return null;
-          });
+        var boss = BossesConfig.getRandomBoss();
+        if (boss == null) return;
+        boss.convert(pokemonEntity);
         evt.cancel();
       }
-      return Unit.INSTANCE;
     });
   }
 

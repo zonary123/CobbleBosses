@@ -65,7 +65,7 @@ public class BossesConfig {
       totalWeight += boss.getChance();
     }
 
-    float random = Utils.RANDOM.nextFloat() * totalWeight;
+    float random = Utils.getRandom().nextFloat() * totalWeight;
     for (Boss boss : CobbleBosses.bossesConfig.getBosses()) {
       random -= boss.getChance();
       if (random <= 0) {
