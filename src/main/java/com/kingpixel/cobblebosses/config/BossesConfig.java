@@ -27,20 +27,18 @@ public class BossesConfig {
       folder.mkdirs();
       createDefaultTags();
     } else {
-      File[] files = folder.listFiles();
-      if (files != null) {
-        for (File file : files) {
-          Boss boss = null;
-          try {
-            boss = Utils.newGson().fromJson(Utils.readFileSync(file), Boss.class);
-            boss.setId(file.getName().replace(".json", ""));
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-          boss.check();
-          bosses.add(boss);
-          Utils.writeFileAsync(CobbleBosses.PATH_BOSSES, boss.getId() + ".json", Utils.newGson().toJson(boss));
+      var files = Utils.getFiles(folder);
+      for (File file : files) {
+        Boss boss = null;
+        try {
+          boss = Utils.newGson().fromJson(Utils.readFileSync(file), Boss.class);
+          boss.setId(file.getName().replace(".json", ""));
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
+        boss.check();
+        bosses.add(boss);
+        Utils.writeFileAsync(CobbleBosses.PATH_BOSSES, boss.getId() + ".json", Utils.newGson().toJson(boss));
       }
     }
 
