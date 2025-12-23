@@ -32,13 +32,14 @@ public class BossesConfig {
         Boss boss = null;
         try {
           boss = Utils.newGson().fromJson(Utils.readFileSync(file), Boss.class);
+          if (boss == null) continue;
           boss.setId(file.getName().replace(".json", ""));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
         boss.check();
         bosses.add(boss);
-        Utils.writeFileAsync(CobbleBosses.PATH_BOSSES, boss.getId() + ".json", Utils.newGson().toJson(boss));
+        Utils.writeFileAsync(file, Utils.newGson().toJson(boss));
       }
     }
 

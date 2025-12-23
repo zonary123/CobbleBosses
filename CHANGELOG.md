@@ -8,7 +8,7 @@
 
 ### Bug Fixes
 
-- N\A
+- Fixed an issue where files in folders were being written to bosses instead of their corresponding folder.
 
 ### Optimizations
 
