@@ -43,6 +43,7 @@ public class Boss {
   private List<String> pokemons;
   private String properties;
   private AdvancedItemChance rewards;
+  private Damageable damageable;
 
   public Boss() {
     id = "default";
@@ -59,6 +60,7 @@ public class Boss {
     pokemons = List.of("pikachu");
     properties = "shiny=true";
     rewards = new AdvancedItemChance();
+    damageable = new Damageable();
   }
 
   public void check() {
@@ -79,6 +81,7 @@ public class Boss {
     if (nickName == null) nickName = "§e%pokemon% §9Boss";
     if (properties == null) properties = "shiny=true";
     if (rewards == null) rewards = new AdvancedItemChance();
+    if (damageable == null) damageable = new Damageable();
   }
 
   public void convert(PokemonEntity p) {
