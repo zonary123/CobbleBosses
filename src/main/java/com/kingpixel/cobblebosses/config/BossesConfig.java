@@ -23,11 +23,11 @@ public class BossesConfig {
     bosses.clear();
     File folder = Utils.getAbsolutePath(CobbleBosses.PATH_BOSSES);
 
-    if (!folder.exists()) {
+    var files = Utils.getFiles(folder);
+    if (files.isEmpty()) {
       folder.mkdirs();
       createDefaultTags();
     } else {
-      var files = Utils.getFiles(folder);
       for (File file : files) {
         Boss boss = null;
         try {
