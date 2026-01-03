@@ -7,7 +7,9 @@ import com.kingpixel.cobblebosses.config.BossesConfig;
 import com.kingpixel.cobblebosses.config.Config;
 import com.kingpixel.cobblebosses.config.Lang;
 import com.kingpixel.cobblebosses.events.BattleEvents;
+import com.kingpixel.cobblebosses.events.CaptureEvents;
 import com.kingpixel.cobblebosses.events.SpawningEvents;
+import com.kingpixel.cobblebosses.events.StartBattleEvent;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.fabricmc.api.ModInitializer;
@@ -29,7 +31,7 @@ public class CobbleBosses implements ModInitializer {
   public static BossesConfig bossesConfig = new BossesConfig();
   public static int oldLevelCap = 100;
   public static int maxLevelCap = 0;
-  public static final Executor EXECUTOR_COBBLE_BOSSES = Executors.newFixedThreadPool(2, new ThreadFactoryBuilder()
+  public static final Executor EXECUTOR_COBBLE_BOSSES = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder()
     .setNameFormat("executor-cobblebosses-%d")
     .setDaemon(true)
     .build());
@@ -74,5 +76,7 @@ public class CobbleBosses implements ModInitializer {
 
     SpawningEvents.register();
     BattleEvents.register();
+    CaptureEvents.register();
+    StartBattleEvent.register();
   }
 }

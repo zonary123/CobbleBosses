@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 public class Lang {
   private String reload;
   private String youCanCatch;
+  private String youCanFight;
 
   /**
    * Constructor to generate a file if one doesn't exist.
@@ -21,6 +22,7 @@ public class Lang {
   public Lang() {
     this.reload = "%prefix% &7Reloaded &7.";
     this.youCanCatch = "%prefix% &aNow you can catch the boss.";
+    this.youCanFight = "%prefix% &aNow you can fight the boss.";
   }
 
   /**

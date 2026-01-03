@@ -4,7 +4,8 @@
 
 ### Features
 
-- N\A
+- Added by `eupedroosouza`. Bosses can now be configured so you can fight them with swords, and once they reach low
+  health, they can be set as capturable or flightless. This is optional.
 
 ### Bug Fixes
 
