@@ -33,7 +33,6 @@ public abstract class PreventDamageMixin {
     if (pokemon == null) return;
     if (pokemon.getPersistentData().contains(CobbleBosses.TAG_BOSS_ID)) {
       Entity attacker = source.getAttacker();
-      System.out.println("attacker = " + attacker);
       if (attacker == null) return;
       if (attacker instanceof ServerPlayerEntity player) {
         Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
