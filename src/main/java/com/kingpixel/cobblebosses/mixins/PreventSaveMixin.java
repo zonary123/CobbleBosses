@@ -1,6 +1,5 @@
 package com.kingpixel.cobblebosses.mixins;
 
-import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
@@ -64,7 +63,7 @@ public abstract class PreventSaveMixin {
   @Unique private boolean cobbleBosses$isBossOrPassLevel(Entity entity) {
     if (entity instanceof PokemonEntity pokemonEntity) {
       Pokemon pokemon = pokemonEntity.getPokemon();
-      return pokemon.getPersistentData().contains(CobbleBosses.TAG_BOSS_ID) || pokemon.getLevel() > Cobblemon.INSTANCE.getConfig().getMaxPokemonLevel();
+      return pokemon.getLevel() > CobbleBosses.oldLevelCap | pokemon.getPersistentData().contains(CobbleBosses.TAG_BOSS_ID);
     }
     return false;
   }
@@ -74,7 +73,7 @@ public abstract class PreventSaveMixin {
     Entity entity = (Entity) (Object) this;
     if (entity instanceof PokemonEntity pokemonEntity) {
       Pokemon pokemon = pokemonEntity.getPokemon();
-      if (pokemon.getLevel() > Cobblemon.INSTANCE.getConfig().getMaxPokemonLevel()) cir.setReturnValue(false);
+      if (pokemon.getLevel() > CobbleBosses.oldLevelCap) cir.setReturnValue(false);
     }
   }
 }
