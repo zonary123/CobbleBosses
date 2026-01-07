@@ -22,6 +22,7 @@ public class StartBattleEvent {
       for (BattleActor actor : actors) {
         if (!(actor instanceof PokemonBattleActor pokemonBattleActor)) continue;
         PokemonEntity pokemonEntity = pokemonBattleActor.getEntity();
+        if (pokemonEntity == null) continue;
         Pokemon pokemon = pokemonEntity.getPokemon();
         var boss = CobbleBosses.bossesConfig.getBoss(pokemon);
         if (boss == null) continue;

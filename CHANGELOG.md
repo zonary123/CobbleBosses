@@ -10,6 +10,7 @@
 ### Bug Fixes
 
 - Fixed an issue where files in folders were being written to bosses instead of their corresponding folder.
+- Crashed when you enter a battle from a fishing encounter.
 
 ### Optimizations
 
