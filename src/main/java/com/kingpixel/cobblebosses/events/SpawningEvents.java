@@ -19,7 +19,9 @@ public class SpawningEvents {
   public static void register() {
     CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.HIGHEST, evt -> {
       var pokemonEntity = evt.getEntity();
+      if (pokemonEntity == null) return;
       var pokemon = pokemonEntity.getPokemon();
+      if (pokemon == null) return;
       if (isSpecial(pokemon)) return;
       ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
       String s = world.getRegistryKey().getValue().toString();
