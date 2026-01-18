@@ -17,7 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 public class SpawningEvents {
 
   public static void register() {
-    CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.HIGHEST, evt -> {
+    CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.LOWEST, evt -> {
       var pokemonEntity = evt.getEntity();
       if (pokemonEntity == null) return;
       var pokemon = pokemonEntity.getPokemon();
