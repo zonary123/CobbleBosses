@@ -1,10 +1,12 @@
 package com.kingpixel.cobblebosses.model;
 
 import com.cobblemon.mod.common.Cobblemon;
+import com.cobblemon.mod.common.api.drop.DropTable;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
+import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.Model.AdvancedItemChance;
 import com.kingpixel.cobbleutils.util.Utils;
 import kotlin.Unit;
@@ -14,7 +16,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.world.ServerWorld;
@@ -85,10 +86,10 @@ public class Boss {
   }
 
   public void convert(PokemonEntity p) {
-    Pokemon pokemon = p.getPokemon().clone(true, DynamicRegistryManager.EMPTY);
     ServerWorld world = (ServerWorld) p.getEntityWorld();
     Vec3d pos = p.getPos();
     CobbleBosses.server.executeSync(() -> p.remove(Entity.RemovalReason.DISCARDED));
+    Pokemon pokemon = p.getPokemon().clone(true, CobbleUtils.server.getRegistryManager());
     spawn(world, pos, pokemon);
   }
 
@@ -125,7 +126,7 @@ public class Boss {
     }
 
     Pokemon finalPokemon = pokemon;
-    CobbleBosses.server.executeSync(() -> {
+    CobbleBosses.server.execute(() -> {
       NbtCompound nbt = finalPokemon.getPersistentData();
       nbt.putString(CobbleBosses.TAG_BOSS_ID, id);
 
@@ -137,11 +138,12 @@ public class Boss {
       }
       Cobblemon.INSTANCE.getConfig().setMaxPokemonLevel(CobbleBosses.oldLevelCap);
 
-      PokemonEntity pokemonEntity = finalPokemon.sendOut(world, pos, null, bossEntity -> {
+      finalPokemon.sendOut(world, pos, null, bossEntity -> {
         if (glowing) {
           bossEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false));
           assignBossToTeam(world, bossEntity);
         }
+        bossEntity.setDrops(new DropTable());
 
         if (particles && !particleColor.isEmpty()) {
           ParticleEffectManager particleEffectManager = new ParticleEffectManager(particleColor);

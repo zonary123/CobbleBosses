@@ -2,6 +2,7 @@ package com.kingpixel.cobblebosses.command;
 
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.command.argument.PokemonPropertiesArgumentType;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.config.OldConfig;
 import com.kingpixel.cobblebosses.model.Boss;
@@ -136,7 +137,8 @@ public class CommandTree {
     String id = StringArgumentType.getString(context, "boss");
     var boss = CobbleBosses.bossesConfig.getBoss(id);
     if (boss == null) return;
-    boss.spawn(serverWorld, pos, pokemonProperties.create());
+    Pokemon pokemon = pokemonProperties.create();
+    boss.spawn(serverWorld, pos, pokemon);
   }
 
 }
