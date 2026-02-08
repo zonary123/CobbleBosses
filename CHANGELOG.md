@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.7] - 08-02-2026
+
+### Features
+
+- No new features added.
+
+## Bug Fixes
+
+- Now the bosses don’t drop the loot table as if they were normal wild Pokémon
+
 ## [1.0.6] - 2025-12-03
 
 ### Features
