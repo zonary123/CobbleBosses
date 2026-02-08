@@ -76,6 +76,7 @@ public class BossesConfig {
 
   public Boss getBoss(Pokemon pokemon) {
     String id = pokemon.getPersistentData().getString(CobbleBosses.TAG_BOSS_ID);
+    if (id.isEmpty()) return null;
     for (Boss boss : bosses) {
       if (boss.getId().equals(id)) return boss;
     }
