@@ -9,6 +9,8 @@
 ## Bug Fixes
 
 - Now the bosses don’t drop the loot table as if they were normal wild Pokémon
+- Fixed crash when the capturable bosses option was enabled and the boss had a level above Cobblemon's maximum level.
+- Added properties option to the damageable option for captures.
 
 ## [1.0.6] - 2025-12-03
 
