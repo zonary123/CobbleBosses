@@ -9,6 +9,7 @@ public class Damageable {
   private boolean enabled;
   private Double untilLifePercentage;
   private boolean catchable;
+  private int level;
   private String properties;
 
   public Damageable() {

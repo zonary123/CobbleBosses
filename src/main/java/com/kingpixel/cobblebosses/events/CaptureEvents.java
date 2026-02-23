@@ -19,8 +19,10 @@ public class CaptureEvents {
       PokemonEntity pokemonEntity = evt.getPokemonEntity();
       Pokemon pokemon = pokemonEntity.getPokemon();
       Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
-      if (boss != null && evt.getCaptureResult().isSuccessfulCapture())
+      if (boss != null && evt.getCaptureResult().isSuccessfulCapture()) {
+        pokemon.setLevel(boss.getDamageable().getLevel());
         PokemonProperties.Companion.parse(boss.getProperties()).apply(pokemon);
+      }
     });
     CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.HIGHEST, evt -> {
       ServerPlayerEntity player = evt.getPlayer();
@@ -28,6 +30,7 @@ public class CaptureEvents {
       Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
       if (boss != null) {
         pokemon.getPersistentData().remove(CobbleBosses.TAG_BOSS_ID);
+        pokemon.setLevel(boss.getDamageable().getLevel());
         boss.getRewards().giveRewards(player.getUuid());
       }
     });
