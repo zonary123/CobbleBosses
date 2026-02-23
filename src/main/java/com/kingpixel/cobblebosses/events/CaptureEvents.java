@@ -21,7 +21,6 @@ public class CaptureEvents {
       Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
       if (boss != null && evt.getCaptureResult().isSuccessfulCapture()) {
         pokemon.setLevel(boss.getDamageable().getLevel());
-        
         PokemonProperties.Companion.parse(boss.getProperties()).apply(pokemon);
       }
     });
