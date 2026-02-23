@@ -17,6 +17,7 @@ public class Damageable {
     this.untilLifePercentage = 10.0D;
     this.catchable = false;
     this.properties = "level=10";
+    this.level = 10;
   }
 
   public boolean isDownLife(PokemonEntity pokemonEntity) {
