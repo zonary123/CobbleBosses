@@ -13,12 +13,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
  */
 public class CaptureEvents {
   public static void register() {
-    CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.LOWEST, evt -> {
+    CobblemonEvents.POKEMON_CAPTURED.subscribe(Priority.HIGHEST, evt -> {
       ServerPlayerEntity player = evt.getPlayer();
       Pokemon pokemon = evt.getPokemon();
       Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
       if (boss != null) {
         pokemon.getPersistentData().remove(CobbleBosses.TAG_BOSS_ID);
+        pokemon.setLevel(boss.getDamageable().getLevel());
         boss.getRewards().giveRewards(player.getUuid());
       }
     });
