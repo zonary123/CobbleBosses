@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.8] - 30-03-2026
+
+## Bug Fixes
+
+- Fixed a crash with ledger.
+
 ## [1.0.7] - 08-02-2026
 
 ### Features
