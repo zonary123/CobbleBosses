@@ -3,6 +3,8 @@ package com.kingpixel.cobblebosses.mixins;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobblebosses.model.Damageable;
@@ -19,15 +21,17 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
 import java.util.UUID;
 
 @Mixin(PokemonEntity.class)
 public abstract class PreventDamageAndSaveMixin {
 
   @Unique
-  private final Map<UUID, Long> rewardCooldown = new HashMap<>();
+  private static final Cache<UUID, Boolean> rewardCooldown =
+    Caffeine.newBuilder()
+      .expireAfterWrite(Duration.ofSeconds(3))
+      .build();
 
   @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
   private void cobbleBosses$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
@@ -61,9 +65,8 @@ public abstract class PreventDamageAndSaveMixin {
       entity.setHealth(1.0F);
 
       if (damageable.isCatchable()) {
-        PokemonProperties.Companion
-          .parse("uncatchable=no")
-          .apply(pokemon);
+
+        PokemonProperties.Companion.parse("uncatchable=no").apply(pokemon);
 
         PlayerUtils.sendMessage(
           player.getUuid(),
@@ -71,7 +74,9 @@ public abstract class PreventDamageAndSaveMixin {
           CobbleBosses.config.getPrefix(),
           TypeMessage.CHAT
         );
+
       } else {
+
         PlayerUtils.sendMessage(
           player.getUuid(),
           CobbleBosses.language.getYouCanFight(),
@@ -79,11 +84,10 @@ public abstract class PreventDamageAndSaveMixin {
           TypeMessage.CHAT
         );
       }
-      long now = System.currentTimeMillis();
-      long last = rewardCooldown.getOrDefault(player.getUuid(), 0L);
 
-      if (now - last > 3000) {
-        rewardCooldown.put(player.getUuid(), now);
+      if (rewardCooldown.getIfPresent(player.getUuid()) == null) {
+
+        rewardCooldown.put(player.getUuid(), true);
 
         AdvancedItemChance rewards = boss.getRewards();
         if (rewards != null) {
@@ -98,8 +102,6 @@ public abstract class PreventDamageAndSaveMixin {
       cir.setReturnValue(false);
       cir.cancel();
     }
-
-
   }
 
   @Inject(method = "shouldSave", at = @At("HEAD"), cancellable = true)
