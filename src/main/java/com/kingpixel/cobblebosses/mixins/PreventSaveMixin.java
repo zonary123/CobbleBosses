@@ -1,8 +1,6 @@
 package com.kingpixel.cobblebosses.mixins;
 
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
-import com.cobblemon.mod.common.pokemon.Pokemon;
-import com.kingpixel.cobblebosses.CobbleBosses;
+import com.kingpixel.cobblebosses.util.BossUtil;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,12 +16,9 @@ public abstract class PreventSaveMixin {
   @Inject(method = "saveNbt", at = @At("HEAD"), cancellable = true)
   private void PreventSaveMixin$saveNbt(CallbackInfoReturnable<Boolean> cir) {
     Entity entity = (Entity) (Object) this;
-    if (entity instanceof PokemonEntity pokemonEntity) {
-      Pokemon pokemon = pokemonEntity.getPokemon();
-      if (pokemon.getLevel() > CobbleBosses.oldLevelCap) {
-        cir.setReturnValue(false);
-        cir.cancel();
-      }
+    if (BossUtil.isBossOrHighLevel(entity)) {
+      cir.setReturnValue(false);
+      cir.cancel();
     }
   }
 }

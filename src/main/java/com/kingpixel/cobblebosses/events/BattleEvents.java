@@ -5,15 +5,11 @@ import com.cobblemon.mod.common.api.battles.model.actor.BattleActor;
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.battles.actor.PlayerBattleActor;
 import com.cobblemon.mod.common.battles.actor.PokemonBattleActor;
-import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobbleutils.CobbleUtils;
-import kotlin.Unit;
 import net.minecraft.server.network.ServerPlayerEntity;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Carlos Varas Alonso - 14/02/2025 6:13
@@ -21,46 +17,38 @@ import java.util.concurrent.CompletableFuture;
 public class BattleEvents {
   public static void register() {
     CobblemonEvents.BATTLE_VICTORY.subscribe(Priority.NORMAL, evt -> {
-      CompletableFuture.runAsync(() -> {
-          ServerPlayerEntity player = null;
-          PokemonEntity pokemonEntity = null;
-          for (BattleActor winnerActor : evt.getWinners()) {
-            if (winnerActor instanceof PlayerBattleActor playerBattleActor) {
-              player = playerBattleActor.getEntity();
-            }
-          }
-          if (player == null) {
+      ServerPlayerEntity player = null;
+      for (BattleActor winnerActor : evt.getWinners()) {
+        if (winnerActor instanceof PlayerBattleActor playerBattleActor) {
+          player = playerBattleActor.getEntity();
+        }
+      }
+      if (player == null) {
+        if (CobbleBosses.config.isDebug()) {
+          CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Player not found");
+        }
+        return;
+      }
+      for (BattleActor loserActor : evt.getLosers()) {
+        if (loserActor instanceof PokemonBattleActor pokemonBattleActor) {
+          Pokemon pokemon = pokemonBattleActor.getPokemon().getOriginalPokemon();
+          String id = pokemon.getPersistentData().getString(CobbleBosses.TAG_BOSS_ID);
+          if (id.isEmpty()) {
             if (CobbleBosses.config.isDebug()) {
-              CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Player not found");
+              CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss id not found");
             }
             return;
           }
-          for (BattleActor loserActor : evt.getLosers()) {
-            if (loserActor instanceof PokemonBattleActor pokemonBattleActor) {
-              Pokemon pokemon = pokemonBattleActor.getPokemon().getOriginalPokemon();
-              String id = pokemon.getPersistentData().getString(CobbleBosses.TAG_BOSS_ID);
-              if (id.isEmpty()) {
-                if (CobbleBosses.config.isDebug()) {
-                  CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss id not found");
-                }
-                return;
-              }
-              Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
-              if (boss == null) {
-                if (CobbleBosses.config.isDebug()) {
-                  CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss not found");
-                }
-                return;
-              }
-              boss.getRewards().giveRewards(player);
+          Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
+          if (boss == null) {
+            if (CobbleBosses.config.isDebug()) {
+              CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss not found");
             }
+            return;
           }
-        }, CobbleBosses.EXECUTOR_COBBLE_BOSSES)
-        .exceptionally(ex -> {
-          ex.printStackTrace();
-          return null;
-        });
-      return Unit.INSTANCE;
+          boss.getRewards().giveRewards(player);
+        }
+      }
     });
   }
 }

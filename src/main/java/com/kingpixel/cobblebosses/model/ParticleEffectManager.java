@@ -59,14 +59,14 @@ public class ParticleEffectManager {
     float scaleFactor = pokemonEntity.getPokemon().getScaleModifier();
     float dynamicSize = baseSize + ((float) Math.sqrt(width * height) * 0.3f) + (scaleFactor * 0.5f);
 
-    return Math.max(0.2f, Math.min(dynamicSize, 4.0f));
+    return Math.clamp(dynamicSize, 0.2f, 4.0f);
   }
 
   private float[] calculateParticleSpread(PokemonEntity pokemonEntity, float width, float height) {
     Pokemon pokemon = pokemonEntity.getPokemon();
     float scale = pokemon.getScaleModifier();
-    float spreadX = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
-    float spreadZ = Math.max(0.5f, Math.min(width * 0.4f, 2.5f)) * scale * 0.6f;
+    float spreadX = Math.clamp(width * 0.4f, 0.5f, 2.5f) * scale * 0.6f;
+    float spreadZ = Math.clamp(width * 0.4f, 0.5f, 2.5f) * scale * 0.6f;
     float spreadY = height * 0.5f;
     return new float[]{spreadX, spreadY, spreadZ};
   }
@@ -75,7 +75,7 @@ public class ParticleEffectManager {
     long minInterval = 25;
     long maxInterval = 400;
     float sizeFactor = (width + height) / 2.0f;
-    float scaleFactor = Math.max(0.1f, Math.min(sizeFactor / 3.0f, 1.0f));
+    float scaleFactor = Math.clamp(sizeFactor / 3.0f, 0.1f, 1.0f);
     long intervalMillis = (long) (maxInterval - (scaleFactor * (maxInterval - minInterval)));
     long intervalTicks = intervalMillis / 50; // Convert milliseconds to ticks (1 tick = 50 ms)
     return Math.max(1, intervalTicks); // Ensure at least 1 tick
@@ -89,7 +89,7 @@ public class ParticleEffectManager {
 
     Task.builder()
       .execute((task) -> {
-        if (bossEntity == null || !bossEntity.isAlive()) {
+        if (!bossEntity.isAlive()) {
           task.setExpired();
           return;
         }
