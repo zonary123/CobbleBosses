@@ -45,13 +45,21 @@ public abstract class PreventDamageAndSaveMixin {
     if (boss == null) return;
 
     Damageable damageable = boss.getDamageable();
+
     if (damageable == null || !damageable.isEnabled()) {
       cir.setReturnValue(false);
       cir.cancel();
       return;
     }
 
+    if (damageable.isCatchable() && !pokemon.isUncatchable()) {
+      cir.setReturnValue(false);
+      cir.cancel();
+      return;
+    }
+
     Entity attacker = source.getAttacker();
+
     if (!(attacker instanceof ServerPlayerEntity player)) {
       cir.setReturnValue(false);
       cir.cancel();
@@ -62,11 +70,14 @@ public abstract class PreventDamageAndSaveMixin {
     float predictedHealth = currentHealth - amount;
 
     if (predictedHealth <= 0.0F) {
+
       entity.setHealth(1.0F);
 
       if (damageable.isCatchable()) {
 
-        PokemonProperties.Companion.parse("uncatchable=no").apply(pokemon);
+        PokemonProperties.Companion
+          .parse("uncatchable=no")
+          .apply(pokemon);
 
         PlayerUtils.sendMessage(
           player.getUuid(),
@@ -90,14 +101,13 @@ public abstract class PreventDamageAndSaveMixin {
         rewardCooldown.put(player.getUuid(), true);
 
         AdvancedItemChance rewards = boss.getRewards();
+
         if (rewards != null) {
           rewards.openMenu(player, t -> {
           }, c -> {
           });
         }
       }
-
-      entity.setHealth(Math.max(entity.getHealth(), 1.0F));
 
       cir.setReturnValue(false);
       cir.cancel();
@@ -106,10 +116,12 @@ public abstract class PreventDamageAndSaveMixin {
 
   @Inject(method = "shouldSave", at = @At("HEAD"), cancellable = true)
   private void cobbleBosses$shouldSave(CallbackInfoReturnable<Boolean> cir) {
+
     PokemonEntity entity = (PokemonEntity) (Object) this;
 
     if (BossUtil.isBossOrHighLevel(entity)) {
       cir.setReturnValue(false);
+      cir.cancel();
     }
   }
 
@@ -125,10 +137,12 @@ public abstract class PreventDamageAndSaveMixin {
 
   @Unique
   private void handleRideCancel(Entity passenger, CallbackInfoReturnable<Boolean> cir) {
+
     Entity self = (Entity) (Object) this;
 
     if (BossUtil.isBossOrHighLevel(self) || BossUtil.isBossOrHighLevel(passenger)) {
       cir.setReturnValue(false);
+      cir.cancel();
     }
   }
 }

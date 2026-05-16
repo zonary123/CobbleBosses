@@ -8,7 +8,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -21,17 +22,20 @@ public class Config {
   private boolean debug;
   private String prefix;
   private String lang;
-  private List<String> commands;
+  private Set<String> commands;
   private int rateSpawn;
-  private List<String> blackListWorlds;
+  private Set<String> blackListWorlds;
+  private Set<String> banMoves = new HashSet<>(
+    Set.of("example")
+  );
 
   public Config() {
     debug = false;
     prefix = "§7[§6CobbleBosses§7] ";
     lang = "en";
-    commands = List.of("cobblebosses", "bosses");
+    commands = Set.of("cobblebosses", "bosses");
     rateSpawn = 2048;
-    blackListWorlds = List.of("minecraft:world_nether", "minecraft:world_the_end");
+    blackListWorlds = Set.of("minecraft:world_nether", "minecraft:world_the_end");
   }
 
   public void init() {
