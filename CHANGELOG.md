@@ -8,6 +8,10 @@
 
 ## [1.0.8] - 30-03-2026
 
+## Features
+
+- Now you can ban moves to prevent players from using them in boss battles. This is optional.
+
 ## Bug Fixes
 
 - Fixed a crash with ledger.
