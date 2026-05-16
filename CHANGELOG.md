@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0] - 16-05-2026
+
+## Features
+
+- Now you can ban moves to prevent players from using them in boss battles. This is optional.
+
 ## [1.0.8] - 30-03-2026
 
 ## Bug Fixes

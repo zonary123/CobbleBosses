@@ -1,7 +1,6 @@
 package com.kingpixel.cobblebosses;
 
 import com.cobblemon.mod.common.Cobblemon;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.kingpixel.cobblebosses.command.CommandTree;
 import com.kingpixel.cobblebosses.config.BossesConfig;
 import com.kingpixel.cobblebosses.config.Config;
@@ -14,9 +13,6 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public class CobbleBosses implements ModInitializer {
   public static final String MOD_ID = "cobblebosses";
@@ -31,10 +27,6 @@ public class CobbleBosses implements ModInitializer {
   public static BossesConfig bossesConfig = new BossesConfig();
   public static int oldLevelCap = 100;
   public static int maxLevelCap = 0;
-  public static final Executor EXECUTOR_COBBLE_BOSSES = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder()
-    .setNameFormat("executor-cobblebosses-%d")
-    .setDaemon(true)
-    .build());
 
 
   @Override public void onInitialize() {
