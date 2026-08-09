@@ -43,6 +43,14 @@ public abstract class PreventDamageAndSaveMixin {
 
     Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
     if (boss == null) return;
+    Entity attacker = source.getAttacker();
+
+    if (!(attacker instanceof ServerPlayerEntity player)) {
+      cir.setReturnValue(false);
+      cir.cancel();
+      return;
+    }
+
 
     Damageable damageable = boss.getDamageable();
 
@@ -58,23 +66,14 @@ public abstract class PreventDamageAndSaveMixin {
       return;
     }
 
-    Entity attacker = source.getAttacker();
-
-    if (!(attacker instanceof ServerPlayerEntity player)) {
-      cir.setReturnValue(false);
-      cir.cancel();
-      return;
-    }
 
     float currentHealth = entity.getHealth();
     float predictedHealth = currentHealth - amount;
 
-    if (predictedHealth <= 0.0F) {
-
+    if (predictedHealth <= 1.0F) {
       entity.setHealth(1.0F);
 
       if (damageable.isCatchable()) {
-
         PokemonProperties.Companion
           .parse("uncatchable=no")
           .apply(pokemon);
@@ -85,32 +84,26 @@ public abstract class PreventDamageAndSaveMixin {
           CobbleBosses.config.getPrefix(),
           TypeMessage.CHAT
         );
-
-      } else {
-
-        PlayerUtils.sendMessage(
-          player.getUuid(),
-          CobbleBosses.language.getYouCanFight(),
-          CobbleBosses.config.getPrefix(),
-          TypeMessage.CHAT
-        );
-      }
-
-      if (rewardCooldown.getIfPresent(player.getUuid()) == null) {
-
-        rewardCooldown.put(player.getUuid(), true);
-
-        AdvancedItemChance rewards = boss.getRewards();
-
-        if (rewards != null) {
-          rewards.openMenu(player, t -> {
-          }, c -> {
-          });
-        }
+        openRewardMenu(player, boss);
       }
 
       cir.setReturnValue(false);
       cir.cancel();
+    }
+  }
+
+  private void openRewardMenu(ServerPlayerEntity player, Boss boss) {
+    if (rewardCooldown.getIfPresent(player.getUuid()) == null) {
+
+      rewardCooldown.put(player.getUuid(), true);
+
+      AdvancedItemChance rewards = boss.getRewards();
+
+      if (rewards != null) {
+        rewards.openMenu(player, t -> {
+        }, c -> {
+        });
+      }
     }
   }
 

@@ -9,6 +9,8 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobbleutils.CobbleUtils;
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -37,16 +39,24 @@ public class BattleEvents {
             if (CobbleBosses.config.isDebug()) {
               CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss id not found");
             }
-            return;
+            continue;
           }
           Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
           if (boss == null) {
             if (CobbleBosses.config.isDebug()) {
               CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "Boss not found");
             }
-            return;
+            continue;
           }
           boss.getRewards().giveRewards(player);
+          PokemonEntity pokemonEntity = pokemonBattleActor.getEntity();
+          if (pokemonEntity == null) {
+            pokemonEntity = pokemon.getEntity();
+          }
+          if (pokemonEntity != null) {
+            PokemonEntity finalEntity = pokemonEntity;
+            CobbleBosses.server.executeSync(() -> finalEntity.remove(Entity.RemovalReason.DISCARDED));
+          }
         }
       }
     });

@@ -32,21 +32,25 @@ public class StartBattleEvent {
         Pokemon pokemon = pokemonEntity.getPokemon();
         var boss = CobbleBosses.bossesConfig.getBoss(pokemon);
         if (boss == null) continue;
-        var player = battle.getPlayers().getFirst();
-        var party = Cobblemon.INSTANCE.getStorage().getParty(player);
-        for (Pokemon pokemon1 : party) {
-          for (Move move : pokemon1.getMoveSet()) {
-            if (CobbleBosses.config.getBanMoves().contains(move.getName())) {
-              PlayerUtils.sendMessage(
-                player,
-                PokemonUtils.replace(CobbleBosses.language.getMoveBanned()
-                    .replace("%move%", move.getName()),
-                  pokemon1),
-                CobbleBosses.config.getPrefix(),
-                TypeMessage.CHAT
-              );
-              evt.cancel();
-              return;
+        boolean checkedPlayer = false;
+        if (!checkedPlayer) {
+          var player = battle.getPlayers().getFirst();
+          if (player == null) continue;
+          var party = Cobblemon.INSTANCE.getStorage().getParty(player);
+          for (Pokemon pokemon1 : party) {
+            for (Move move : pokemon1.getMoveSet()) {
+              if (CobbleBosses.config.getBanMoves().contains(move.getName())) {
+                PlayerUtils.sendMessage(
+                  player,
+                  PokemonUtils.replace(CobbleBosses.language.getMoveBanned()
+                      .replace("%move%", move.getName()),
+                    pokemon1),
+                  CobbleBosses.config.getPrefix(),
+                  TypeMessage.CHAT
+                );
+                evt.cancel();
+                return;
+              }
             }
           }
         }

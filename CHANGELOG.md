@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.1] - 2026-08-02
+
+### Bug Fixes
+
+- Fixed an issue where boss entities were not removed from the world after being defeated in Cobblemon battles.
+- Fixed premature loop exit during battle victory event handling when multiple non-boss actors were in the battle's loser list.
+- Fixed overworld damageable bosses (with `catchable = false`) remaining alive at 1 HP instead of being despawned when health reached 0.
+- Fixed non-damageable battle bosses opening reward menus when attacked in the overworld.
+
 ## [1.1.0] - 16-05-2026
 
 ## Features
