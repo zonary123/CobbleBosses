@@ -6,11 +6,13 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.config.OldConfig;
 import com.kingpixel.cobblebosses.model.Boss;
+import com.kingpixel.cobblebosses.util.BossTimerManager;
 import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.api.PermissionApi;
 import com.kingpixel.cobbleutils.util.PlayerUtils;
 import com.kingpixel.cobbleutils.util.TypeMessage;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -27,6 +29,10 @@ import net.minecraft.util.math.Vec3d;
  * @author Carlos Varas Alonso - 10/06/2024 14:08
  */
 public class CommandTree {
+
+  private CommandTree() {
+    // Utility class
+  }
 
   public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registry) {
     for (String command : CobbleBosses.config.getCommands()) {
@@ -118,6 +124,84 @@ public class CommandTree {
                       )
                   )
               )
+          ).then(
+            CommandManager.literal("reward")
+              .then(
+                CommandManager.argument("player", EntityArgumentType.player())
+                  .then(
+                    CommandManager.argument("boss", StringArgumentType.string())
+                      .suggests((context, builder) -> {
+                        for (Boss boss : CobbleBosses.bossesConfig.getBosses()) {
+                          builder.suggest(boss.getId());
+                        }
+                        return builder.buildFuture();
+                      })
+                      .executes(context -> {
+                        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                        int duration = CobbleBosses.config.getDefaultRewardDuration();
+                        spawnRewardBoss(context, player, duration, PokemonProperties.Companion.parse("random"));
+                        return 1;
+                      })
+                      .then(
+                        CommandManager.argument("duration", IntegerArgumentType.integer(1))
+                          .executes(context -> {
+                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                            int duration = IntegerArgumentType.getInteger(context, "duration");
+                            spawnRewardBoss(context, player, duration, PokemonProperties.Companion.parse("random"));
+                            return 1;
+                          })
+                          .then(
+                            CommandManager.argument("pokemon", PokemonPropertiesArgumentType.Companion.properties())
+                              .executes(context -> {
+                                ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                int duration = IntegerArgumentType.getInteger(context, "duration");
+                                PokemonProperties pokemonProperties = PokemonPropertiesArgumentType.Companion.getPokemonProperties(context, "pokemon");
+                                spawnRewardBoss(context, player, duration, pokemonProperties);
+                                return 1;
+                              })
+                          )
+                      )
+                  )
+              )
+          ).then(
+            CommandManager.literal("spawnreward")
+              .then(
+                CommandManager.argument("boss", StringArgumentType.string())
+                  .suggests((context, builder) -> {
+                    for (Boss boss : CobbleBosses.bossesConfig.getBosses()) {
+                      builder.suggest(boss.getId());
+                    }
+                    return builder.buildFuture();
+                  })
+                  .then(
+                    CommandManager.argument("player", EntityArgumentType.player())
+                      .executes(context -> {
+                        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                        int duration = CobbleBosses.config.getDefaultRewardDuration();
+                        spawnRewardBoss(context, player, duration, PokemonProperties.Companion.parse("random"));
+                        return 1;
+                      })
+                      .then(
+                        CommandManager.argument("duration", IntegerArgumentType.integer(1))
+                          .executes(context -> {
+                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                            int duration = IntegerArgumentType.getInteger(context, "duration");
+                            spawnRewardBoss(context, player, duration, PokemonProperties.Companion.parse("random"));
+                            return 1;
+                          })
+                          .then(
+                            CommandManager.argument("pokemon", PokemonPropertiesArgumentType.Companion.properties())
+                              .executes(context -> {
+                                ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                int duration = IntegerArgumentType.getInteger(context, "duration");
+                                PokemonProperties pokemonProperties = PokemonPropertiesArgumentType.Companion.getPokemonProperties(context, "pokemon");
+                                spawnRewardBoss(context, player, duration, pokemonProperties);
+                                return 1;
+                              })
+                          )
+                      )
+                  )
+              )
           )
       );
     }
@@ -139,6 +223,40 @@ public class CommandTree {
     if (boss == null) return;
     Pokemon pokemon = pokemonProperties.create();
     boss.spawn(serverWorld, pos, pokemon);
+  }
+
+  private static void spawnRewardBoss(CommandContext<ServerCommandSource> context, ServerPlayerEntity player, int duration, PokemonProperties pokemonProperties) {
+    String id = StringArgumentType.getString(context, "boss");
+    Boss boss = CobbleBosses.bossesConfig.getBoss(id);
+    if (boss == null) return;
+    ServerWorld serverWorld = (ServerWorld) player.getEntityWorld();
+    Vec3d pos = player.getPos();
+    Pokemon pokemon = pokemonProperties.create();
+    boss.spawn(serverWorld, pos, pokemon, player, duration);
+
+    String formattedTime = BossTimerManager.formatTime(duration);
+
+    PlayerUtils.sendMessage(
+      player,
+      CobbleBosses.language.getBossSpawnedReward()
+        .replace("%boss%", boss.getId())
+        .replace("%time%", formattedTime),
+      CobbleBosses.config.getPrefix(),
+      TypeMessage.CHAT
+    );
+
+    ServerPlayerEntity executor = context.getSource().getPlayer();
+    if (executor != null && !executor.getUuid().equals(player.getUuid())) {
+      PlayerUtils.sendMessage(
+        executor,
+        CobbleBosses.language.getBossSpawnedSuccess()
+          .replace("%boss%", boss.getId())
+          .replace("%player%", player.getGameProfile().getName())
+          .replace("%time%", formattedTime),
+        CobbleBosses.config.getPrefix(),
+        TypeMessage.CHAT
+      );
+    }
   }
 
 }

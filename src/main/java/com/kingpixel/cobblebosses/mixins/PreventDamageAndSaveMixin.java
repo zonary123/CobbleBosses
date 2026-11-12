@@ -12,8 +12,10 @@ import com.kingpixel.cobblebosses.util.BossUtil;
 import com.kingpixel.cobbleutils.Model.AdvancedItemChance;
 import com.kingpixel.cobbleutils.util.PlayerUtils;
 import com.kingpixel.cobbleutils.util.TypeMessage;
+import com.kingpixel.cobblebosses.util.BossTimerManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -51,6 +53,25 @@ public abstract class PreventDamageAndSaveMixin {
       return;
     }
 
+    NbtCompound nbt = pokemon.getPersistentData();
+    if (nbt.contains(CobbleBosses.TAG_OWNER_UUID)) {
+      String ownerUuidStr = nbt.getString(CobbleBosses.TAG_OWNER_UUID);
+      if (!player.getUuid().toString().equalsIgnoreCase(ownerUuidStr)) {
+        String ownerName = nbt.getString(CobbleBosses.TAG_OWNER_NAME);
+        PlayerUtils.sendMessage(
+          player.getUuid(),
+          CobbleBosses.language.getNotYourBoss()
+            .replace("%owner%", ownerName)
+            .replace("%player%", player.getGameProfile().getName()),
+          CobbleBosses.config.getPrefix(),
+          TypeMessage.CHAT
+        );
+        cir.setReturnValue(false);
+        cir.cancel();
+        return;
+      }
+    }
+
 
     Damageable damageable = boss.getDamageable();
 
@@ -70,10 +91,20 @@ public abstract class PreventDamageAndSaveMixin {
     float currentHealth = entity.getHealth();
     float predictedHealth = currentHealth - amount;
 
-    if (predictedHealth <= 1.0F) {
-      entity.setHealth(1.0F);
+    float currentPercentage = (100 * currentHealth / pokemon.getMaxHealth());
+    float predictedPercentage = (100 * Math.max(0, predictedHealth) / pokemon.getMaxHealth());
+    if (currentPercentage > damageable.getUntilLifePercentage() && predictedPercentage <= damageable.getUntilLifePercentage()) {
+      PlayerUtils.sendMessage(
+        player.getUuid(),
+        CobbleBosses.language.getYouCanFight(),
+        CobbleBosses.config.getPrefix(),
+        TypeMessage.CHAT
+      );
+    }
 
+    if (predictedHealth <= 1.0F) {
       if (damageable.isCatchable()) {
+        entity.setHealth(1.0F);
         PokemonProperties.Companion
           .parse("uncatchable=no")
           .apply(pokemon);
@@ -85,10 +116,18 @@ public abstract class PreventDamageAndSaveMixin {
           TypeMessage.CHAT
         );
         openRewardMenu(player, boss);
+        cir.setReturnValue(false);
+        cir.cancel();
+      } else {
+        if (entity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+          boss.removeBossFromTeam(serverWorld, entity);
+        }
+        boss.getRewards().giveRewards(player);
+        BossTimerManager.untrack(entity);
+        CobbleBosses.server.executeSync(() -> entity.remove(Entity.RemovalReason.KILLED));
+        cir.setReturnValue(true);
+        cir.cancel();
       }
-
-      cir.setReturnValue(false);
-      cir.cancel();
     }
   }
 
@@ -109,9 +148,12 @@ public abstract class PreventDamageAndSaveMixin {
 
   @Inject(method = "shouldSave", at = @At("HEAD"), cancellable = true)
   private void cobbleBosses$shouldSave(CallbackInfoReturnable<Boolean> cir) {
-
     PokemonEntity entity = (PokemonEntity) (Object) this;
-
+    if (BossUtil.isBoss(entity)) {
+      cir.setReturnValue(true);
+      cir.cancel();
+      return;
+    }
     if (BossUtil.isBossOrHighLevel(entity)) {
       cir.setReturnValue(false);
       cir.cancel();

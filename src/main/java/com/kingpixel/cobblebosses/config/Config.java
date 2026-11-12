@@ -24,6 +24,7 @@ public class Config {
   private String lang;
   private Set<String> commands;
   private int rateSpawn;
+  private int defaultRewardDuration;
   private Set<String> blackListWorlds;
   private Set<String> banMoves = new HashSet<>(
     Set.of("example")
@@ -35,7 +36,15 @@ public class Config {
     lang = "en";
     commands = Set.of("cobblebosses", "bosses");
     rateSpawn = 2048;
+    defaultRewardDuration = 300;
     blackListWorlds = Set.of("minecraft:world_nether", "minecraft:world_the_end");
+  }
+
+  public int getDefaultRewardDuration() {
+    if (defaultRewardDuration <= 0) {
+      defaultRewardDuration = 300;
+    }
+    return defaultRewardDuration;
   }
 
   public void init() {

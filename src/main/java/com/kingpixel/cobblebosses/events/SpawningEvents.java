@@ -18,14 +18,16 @@ public class SpawningEvents {
 
   public static void register() {
     CobblemonEvents.POKEMON_ENTITY_SPAWN.subscribe(Priority.LOWEST, evt -> {
+      int rate = CobbleBosses.config.getRateSpawn();
+      if (rate <= 0) return;
       var pokemonEntity = evt.getEntity();
+      if (!(pokemonEntity.getEntityWorld() instanceof ServerWorld world)) return;
       var pokemon = pokemonEntity.getPokemon();
       if (isSpecial(pokemon)) return;
-      ServerWorld world = (ServerWorld) pokemonEntity.getEntityWorld();
       String s = world.getRegistryKey().getValue().toString();
       if (CobbleBosses.config.isDebug()) CobbleUtils.LOGGER.info(CobbleBosses.MOD_ID, "World: " + s);
       if (CobbleBosses.config.getBlackListWorlds().contains(s)) return;
-      int random = Utils.getRandom().nextInt(CobbleBosses.config.getRateSpawn());
+      int random = Utils.getRandom().nextInt(rate);
       if (random == 0) {
         var boss = BossesConfig.getRandomBoss();
         if (boss == null) return;

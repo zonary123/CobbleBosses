@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.1.3] - 2026-10-18
+
+### Added
+
+- **Player-Locked Reward Bosses & Auto-Despawn Timer**:
+  - Added `/boss reward <player> <boss> [duration] [pokemon]` and `/boss spawnreward <boss> <player> [duration] [pokemon]`.
+  - Anti-theft protection: bosses spawned via this command are exclusively bound to the target player. Other players are prevented from battling or dealing direct damage to the boss.
+  - Defeat Countdown Timer: reward bosses feature an auto-despawn timer (default 300s, configurable in `config.json`). Sends a warning when 60s remain, and automatically despawns the boss (terminating any active battle safely) if not defeated in time.
+- **Automatic In-Mod Wiki**:
+  - The mod now automatically generates a comprehensive `WIKI.md` guide inside the `config/cobblebosses/` folder on server startup. Server owners can view all boss settings, commands, permissions, and scaling configuration examples locally without searching for external documentation.
+
+### Bug Fixes
+
+- Fixed an issue where boss titles or tags (such as «Épico») would repeat endlessly every time the boss reloaded or finished a battle.
+- Fixed boss glowing outlines not appearing properly or disappearing after battles and healing.
+- Fixed bosses disappearing and naturally despawning when players moved away.
+- Fixed an issue where damageable bosses without catch enabled became immortal at 1 HP instead of being defeated and dropping loot.
+- Fixed players not being notified when a boss's health is high enough to block battles or low enough to start fighting.
+- Fixed potential errors and crashes when checking player teams, banned moves, or loading boss configuration files.
+- Fixed scoreboard buildup caused by defeated or captured bosses remaining in color teams.
+
+## [1.1.2] - 2026-09-06
+
+### Changed
+
+- **Cobblemon 1.8.0 Compatibility**: Updated compatibility and dependencies to support Cobblemon 1.8.0 (Minecraft 1.21.1).
+
 ## [1.1.1] - 2026-08-02
 
 ### Bug Fixes

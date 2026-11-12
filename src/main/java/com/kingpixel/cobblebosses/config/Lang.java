@@ -16,6 +16,12 @@ public class Lang {
   private String youCanCatch;
   private String youCanFight;
   private String moveBanned;
+  private String cannotFightYet;
+  private String notYourBoss;
+  private String bossSpawnedReward;
+  private String bossSpawnedSuccess;
+  private String bossTimeout;
+  private String bossTimeoutWarning;
 
   /**
    * Constructor to generate a file if one doesn't exist.
@@ -25,6 +31,54 @@ public class Lang {
     this.youCanCatch = "%prefix% &aNow you can catch the boss.";
     this.youCanFight = "%prefix% &aNow you can fight the boss.";
     this.moveBanned = "%prefix% &aThe pokemon in the slot %slot% has a banned move and cannot be used in battle.";
+    this.cannotFightYet = "%prefix% &cYou must lower the boss's health before you can battle it.";
+    this.notYourBoss = "%prefix% &cThis boss was spawned for %owner% and only they can fight it!";
+    this.bossSpawnedReward = "%prefix% &aA boss &e%boss% &ahas appeared for you! You have &e%time% &ato defeat it.";
+    this.bossSpawnedSuccess = "%prefix% &aBoss &e%boss% &aspawned for &e%player% &awith a timer of &e%time%&a.";
+    this.bossTimeout = "%prefix% &cYour boss timed out and disappeared!";
+    this.bossTimeoutWarning = "%prefix% &eWarning: Your boss will disappear in &c%time%&e!";
+  }
+
+  public String getCannotFightYet() {
+    if (cannotFightYet == null) {
+      cannotFightYet = "%prefix% &cYou must lower the boss's health before you can battle it.";
+    }
+    return cannotFightYet;
+  }
+
+  public String getNotYourBoss() {
+    if (notYourBoss == null) {
+      notYourBoss = "%prefix% &cThis boss was spawned for %owner% and only they can fight it!";
+    }
+    return notYourBoss;
+  }
+
+  public String getBossSpawnedReward() {
+    if (bossSpawnedReward == null) {
+      bossSpawnedReward = "%prefix% &aA boss &e%boss% &ahas appeared for you! You have &e%time% &ato defeat it.";
+    }
+    return bossSpawnedReward;
+  }
+
+  public String getBossSpawnedSuccess() {
+    if (bossSpawnedSuccess == null) {
+      bossSpawnedSuccess = "%prefix% &aBoss &e%boss% &aspawned for &e%player% &awith a timer of &e%time%&a.";
+    }
+    return bossSpawnedSuccess;
+  }
+
+  public String getBossTimeout() {
+    if (bossTimeout == null) {
+      bossTimeout = "%prefix% &cYour boss timed out and disappeared!";
+    }
+    return bossTimeout;
+  }
+
+  public String getBossTimeoutWarning() {
+    if (bossTimeoutWarning == null) {
+      bossTimeoutWarning = "%prefix% &eWarning: Your boss will disappear in &c%time%&e!";
+    }
+    return bossTimeoutWarning;
   }
 
   /**

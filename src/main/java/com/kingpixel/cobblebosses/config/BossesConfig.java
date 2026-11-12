@@ -3,6 +3,7 @@ package com.kingpixel.cobblebosses.config;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.model.Boss;
+import com.kingpixel.cobbleutils.CobbleUtils;
 import com.kingpixel.cobbleutils.util.Utils;
 import lombok.Getter;
 
@@ -21,6 +22,7 @@ public class BossesConfig {
 
   public void init() {
     bosses.clear();
+    CobbleBosses.maxLevelCap = CobbleBosses.oldLevelCap;
     File folder = Utils.getAbsolutePath(CobbleBosses.PATH_BOSSES);
 
     var files = Utils.getFiles(folder);
@@ -34,12 +36,12 @@ public class BossesConfig {
           boss = Utils.newGson().fromJson(Utils.readFileSync(file), Boss.class);
           if (boss == null) continue;
           boss.setId(file.getName().replace(".json", ""));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
+        } catch (Exception e) {
+          CobbleUtils.LOGGER.error(CobbleBosses.MOD_ID, "Error reading boss file " + file.getName() + ": " + e.getMessage());
+          continue;
         }
         boss.check();
         bosses.add(boss);
-        Utils.writeFileAsync(file, Utils.newGson().toJson(boss));
       }
     }
 

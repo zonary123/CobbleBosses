@@ -13,6 +13,8 @@ import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobbleutils.util.PlayerUtils;
 import com.kingpixel.cobbleutils.util.PokemonUtils;
 import com.kingpixel.cobbleutils.util.TypeMessage;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  *
@@ -32,30 +34,58 @@ public class StartBattleEvent {
         Pokemon pokemon = pokemonEntity.getPokemon();
         var boss = CobbleBosses.bossesConfig.getBoss(pokemon);
         if (boss == null) continue;
-        boolean checkedPlayer = false;
-        if (!checkedPlayer) {
-          var player = battle.getPlayers().getFirst();
-          if (player == null) continue;
-          var party = Cobblemon.INSTANCE.getStorage().getParty(player);
-          for (Pokemon pokemon1 : party) {
-            for (Move move : pokemon1.getMoveSet()) {
-              if (CobbleBosses.config.getBanMoves().contains(move.getName())) {
-                PlayerUtils.sendMessage(
-                  player,
-                  PokemonUtils.replace(CobbleBosses.language.getMoveBanned()
-                      .replace("%move%", move.getName()),
-                    pokemon1),
-                  CobbleBosses.config.getPrefix(),
-                  TypeMessage.CHAT
-                );
-                evt.cancel();
-                return;
-              }
+        if (battle.getPlayers().isEmpty()) continue;
+        var player = battle.getPlayers().getFirst();
+        if (player == null) continue;
+
+        NbtCompound nbt = pokemon.getPersistentData();
+        if (nbt.contains(CobbleBosses.TAG_OWNER_UUID)) {
+          String ownerUuidStr = nbt.getString(CobbleBosses.TAG_OWNER_UUID);
+          for (ServerPlayerEntity p : battle.getPlayers()) {
+            if (!p.getUuid().toString().equalsIgnoreCase(ownerUuidStr)) {
+              String ownerName = nbt.getString(CobbleBosses.TAG_OWNER_NAME);
+              PlayerUtils.sendMessage(
+                p,
+                CobbleBosses.language.getNotYourBoss()
+                  .replace("%owner%", ownerName)
+                  .replace("%player%", p.getGameProfile().getName()),
+                CobbleBosses.config.getPrefix(),
+                TypeMessage.CHAT
+              );
+              evt.cancel();
+              return;
+            }
+          }
+        }
+        var party = Cobblemon.INSTANCE.getStorage().getParty(player);
+        int slot = 0;
+        for (Pokemon pokemon1 : party) {
+          slot++;
+          if (pokemon1 == null) continue;
+          for (Move move : pokemon1.getMoveSet()) {
+            if (move != null && CobbleBosses.config.getBanMoves().contains(move.getName())) {
+              PlayerUtils.sendMessage(
+                player,
+                PokemonUtils.replace(CobbleBosses.language.getMoveBanned()
+                    .replace("%move%", move.getName())
+                    .replace("%slot%", String.valueOf(slot)),
+                  pokemon1),
+                CobbleBosses.config.getPrefix(),
+                TypeMessage.CHAT
+              );
+              evt.cancel();
+              return;
             }
           }
         }
         var damageable = boss.getDamageable();
         if (damageable.isEnabled() && damageable.isDownLife(pokemonEntity)) {
+          PlayerUtils.sendMessage(
+            player,
+            CobbleBosses.language.getCannotFightYet(),
+            CobbleBosses.config.getPrefix(),
+            TypeMessage.CHAT
+          );
           evt.cancel();
           return;
         }

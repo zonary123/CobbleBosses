@@ -81,15 +81,23 @@ public class ParticleEffectManager {
     return Math.max(1, intervalTicks); // Ensure at least 1 tick
   }
 
+  private static final java.util.Set<java.util.UUID> ACTIVE_PARTICLES = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+
   private void scheduleParticleTask(ServerWorld world, LivingEntity bossEntity,
                                     DustParticleEffect particleEffect, float spreadX, float spreadY, float spreadZ,
                                     int particleCount, float height) {
+
+    java.util.UUID entityUuid = bossEntity.getUuid();
+    if (!ACTIVE_PARTICLES.add(entityUuid)) {
+      return;
+    }
 
     long interval = calculateDynamicIntervalInTicks(bossEntity.getWidth(), bossEntity.getHeight());
 
     Task.builder()
       .execute((task) -> {
         if (!bossEntity.isAlive()) {
+          ACTIVE_PARTICLES.remove(entityUuid);
           task.setExpired();
           return;
         }
