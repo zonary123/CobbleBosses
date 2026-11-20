@@ -13,6 +13,7 @@ import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.kingpixel.cobblebosses.util.BossTimerManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 /**
  * @author Carlos Varas Alonso - 14/02/2025 6:13
@@ -37,7 +38,7 @@ public class BattleEvents {
             if (boss != null) {
               PokemonEntity entity = pokemonBattleActor.getEntity();
               if (entity == null) entity = pokemon.getEntity();
-              if (entity != null && entity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+              if (entity != null && entity.getEntityWorld() instanceof ServerWorld serverWorld) {
                 boss.applyBossEffects(serverWorld, entity);
               }
             }
@@ -70,7 +71,7 @@ public class BattleEvents {
           if (pokemonEntity != null) {
             BossTimerManager.untrack(pokemonEntity);
             PokemonEntity finalEntity = pokemonEntity;
-            if (finalEntity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+            if (finalEntity.getEntityWorld() instanceof ServerWorld serverWorld) {
               boss.removeBossFromTeam(serverWorld, finalEntity);
             }
             CobbleBosses.server.executeSync(() -> finalEntity.remove(Entity.RemovalReason.DISCARDED));
@@ -87,7 +88,7 @@ public class BattleEvents {
           if (boss != null) {
             PokemonEntity entity = pokemonBattleActor.getEntity();
             if (entity == null) entity = pokemon.getEntity();
-            if (entity != null && entity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+            if (entity != null && entity.getEntityWorld() instanceof ServerWorld serverWorld) {
               boss.applyBossEffects(serverWorld, entity);
             }
           }

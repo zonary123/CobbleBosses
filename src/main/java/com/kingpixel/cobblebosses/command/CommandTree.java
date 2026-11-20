@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.command.argument.PokemonPropertiesArgumentType;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.kingpixel.cobblebosses.CobbleBosses;
+import com.kingpixel.cobblebosses.api.ui.BossMenuRegistry;
 import com.kingpixel.cobblebosses.config.OldConfig;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobblebosses.util.BossTimerManager;
@@ -60,6 +61,32 @@ public class CommandTree {
                   }
                   return 1;
                 }
+              )
+          ).then(
+            CommandManager.literal("menu")
+              .executes(context -> {
+                ServerPlayerEntity player = context.getSource().getPlayer();
+                if (player != null) {
+                  BossMenuRegistry.openMainMenu(player);
+                }
+                return 1;
+              })
+              .then(
+                CommandManager.argument("boss", StringArgumentType.string())
+                  .suggests((context, builder) -> {
+                    for (Boss boss : CobbleBosses.bossesConfig.getBosses()) {
+                      builder.suggest(boss.getId());
+                    }
+                    return builder.buildFuture();
+                  })
+                  .executes(context -> {
+                    ServerPlayerEntity player = context.getSource().getPlayer();
+                    if (player != null) {
+                      String bossId = StringArgumentType.getString(context, "boss");
+                      BossMenuRegistry.openBossRewardMenu(player, bossId);
+                    }
+                    return 1;
+                  })
               )
           ).then(
             CommandManager.literal("migrate")

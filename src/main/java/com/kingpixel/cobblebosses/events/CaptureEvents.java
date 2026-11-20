@@ -9,6 +9,7 @@ import com.kingpixel.cobblebosses.CobbleBosses;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobblebosses.util.BossTimerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 /**
  *
@@ -38,7 +39,7 @@ public class CaptureEvents {
         PokemonEntity entity = pokemon.getEntity();
         if (entity != null) {
           BossTimerManager.untrack(entity);
-          if (entity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+          if (entity.getEntityWorld() instanceof ServerWorld serverWorld) {
             boss.removeBossFromTeam(serverWorld, entity);
           }
         }

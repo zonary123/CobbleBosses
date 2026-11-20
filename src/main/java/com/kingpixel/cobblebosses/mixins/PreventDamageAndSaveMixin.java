@@ -6,17 +6,18 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.kingpixel.cobblebosses.CobbleBosses;
+import com.kingpixel.cobblebosses.api.ui.BossMenuRegistry;
 import com.kingpixel.cobblebosses.model.Boss;
 import com.kingpixel.cobblebosses.model.Damageable;
+import com.kingpixel.cobblebosses.util.BossTimerManager;
 import com.kingpixel.cobblebosses.util.BossUtil;
-import com.kingpixel.cobbleutils.Model.AdvancedItemChance;
 import com.kingpixel.cobbleutils.util.PlayerUtils;
 import com.kingpixel.cobbleutils.util.TypeMessage;
-import com.kingpixel.cobblebosses.util.BossTimerManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -119,7 +120,7 @@ public abstract class PreventDamageAndSaveMixin {
         cir.setReturnValue(false);
         cir.cancel();
       } else {
-        if (entity.getEntityWorld() instanceof net.minecraft.server.world.ServerWorld serverWorld) {
+        if (entity.getEntityWorld() instanceof ServerWorld serverWorld) {
           boss.removeBossFromTeam(serverWorld, entity);
         }
         boss.getRewards().giveRewards(player);
@@ -133,16 +134,8 @@ public abstract class PreventDamageAndSaveMixin {
 
   private void openRewardMenu(ServerPlayerEntity player, Boss boss) {
     if (rewardCooldown.getIfPresent(player.getUuid()) == null) {
-
       rewardCooldown.put(player.getUuid(), true);
-
-      AdvancedItemChance rewards = boss.getRewards();
-
-      if (rewards != null) {
-        rewards.openMenu(player, t -> {
-        }, c -> {
-        });
-      }
+      BossMenuRegistry.openBossRewardMenu(player, boss);
     }
   }
 

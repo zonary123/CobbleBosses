@@ -8,6 +8,11 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import org.joml.Vector3f;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ParticleEffectManager {
   private final String particleColor;
 
@@ -81,13 +86,13 @@ public class ParticleEffectManager {
     return Math.max(1, intervalTicks); // Ensure at least 1 tick
   }
 
-  private static final java.util.Set<java.util.UUID> ACTIVE_PARTICLES = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+  private static final Set<UUID> ACTIVE_PARTICLES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   private void scheduleParticleTask(ServerWorld world, LivingEntity bossEntity,
                                     DustParticleEffect particleEffect, float spreadX, float spreadY, float spreadZ,
                                     int particleCount, float height) {
 
-    java.util.UUID entityUuid = bossEntity.getUuid();
+    UUID entityUuid = bossEntity.getUuid();
     if (!ACTIVE_PARTICLES.add(entityUuid)) {
       return;
     }

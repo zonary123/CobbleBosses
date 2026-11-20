@@ -70,6 +70,44 @@ public class BossTimerManager {
     }
   }
 
+  public static Map<UUID, Long> getTimedBosses() {
+    return Map.copyOf(timedBosses);
+  }
+
+  public static long getRemainingSeconds(UUID entityUuid) {
+    if (entityUuid == null) return 0L;
+    Long despawnTime = timedBosses.get(entityUuid);
+    if (despawnTime == null) return 0L;
+    long remaining = (despawnTime - System.currentTimeMillis()) / 1000L;
+    return Math.max(0L, remaining);
+  }
+
+  public static boolean despawnActiveBoss(MinecraftServer server, UUID entityUuid) {
+    if (server == null || entityUuid == null) return false;
+    PokemonEntity pokemonEntity = findPokemonEntity(server, entityUuid);
+    if (pokemonEntity == null || !BossUtil.isBoss(pokemonEntity)) return false;
+
+    untrack(entityUuid);
+
+    if (pokemonEntity.getBattleId() != null) {
+      PokemonBattle battle = BattleRegistry.getBattle(pokemonEntity.getBattleId());
+      if (battle != null) {
+        battle.stop();
+      }
+    }
+
+    Pokemon pokemon = pokemonEntity.getPokemon();
+    if (pokemon != null && pokemonEntity.getEntityWorld() instanceof ServerWorld serverWorld) {
+      Boss boss = CobbleBosses.bossesConfig.getBoss(pokemon);
+      if (boss != null) {
+        boss.removeBossFromTeam(serverWorld, pokemonEntity);
+      }
+    }
+
+    server.executeSync(() -> pokemonEntity.remove(Entity.RemovalReason.DISCARDED));
+    return true;
+  }
+
   private static void tick(MinecraftServer server) {
     if (server == null) return;
     tickCounter++;

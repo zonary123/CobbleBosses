@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.2.0] - 2026-11-20
+
+### Added
+
+- **Custom Menu Support for External UI Mods**: Companion mods and custom UI systems (like Rotom Phone, web panels, or custom GUI plugins) can now replace CobbleBosses' default boss reward preview menus with their own custom screens using the new `BossMenuProvider` SPI.
+- **Headless Actions & Direct Controls**: Companion mods and server tools can now spawn wild bosses, summon player-locked reward bosses with countdown timers, grant boss loot rewards, despawn active bosses, and reload configurations directly in code without opening chest menus.
+- **Rich Active Boss & Player Profiles**: External mods can now easily inspect configured boss templates, active bosses in the world, remaining despawn timers, and a player's active reward bosses using clean, read-only data models.
+- **Dedicated Lightweight API JAR**: Published builds now automatically produce and distribute `CobbleBosses-...-api.jar`, making it simple for addon developers to build integrations without bundling the entire mod.
+
 ## [1.1.3] - 2026-10-18
 
 ### Added
