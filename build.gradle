@@ -74,7 +74,6 @@ repositories {
     maven { url "https://thedarkcolour.github.io/KotlinForForge/" }
     maven { url "https://papermc.io/repository/maven-public/" }
     maven { url "https://maven.impactdev.net/repository/development/" }
-    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
     maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
     maven { url "https://maven.nucleoid.xyz/"; name = "Nucleoid" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots"; name = "Sonatype Snapshots" }
@@ -93,26 +92,9 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.2")
     modImplementation("ca.landonjw.gooeylibs:fabric-api-repack:${property("gooeylibs_version")}")
 
-    // Economy APIs
-    modImplementation("net.impactdev.impactor.api:economy:${property("impactor_version")}")
-    modImplementation("net.impactdev.impactor:common:${property("impactor_version")}")
-    api("org.spigotmc:spigot-api:${property("spigot_version")}")
-    api("com.github.MilkBowl:VaultAPI:${property("vault_api_version")}")
-
-    // Placeholder API
-    modImplementation("eu.pb4:placeholder-api:${property("placeholder_api_version_fabricandforge")}")
-
-    // Database
-    modImplementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mongodb:mongodb-driver-sync:${property("mongodb_version")}")
-
     // Lombok
     annotationProcessor("org.projectlombok:lombok:${property("lombok_version")}")
     implementation("org.projectlombok:lombok:${property("lombok_version")}")
-
-    // Votifier
-    implementation("com.github.NuVotifier.NuVotifier:nuvotifier-api:2.7.2")
-    implementation("com.github.DrexHD:NuVotifier-Fabric:1.0.0-1.20.5")
 }
 
 processResources {
